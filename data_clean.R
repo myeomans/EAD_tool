@@ -15,15 +15,6 @@ table_row_build<-function(data){
                    students=nrow(data))
   return(row.values)
 }
-TriPartite<-function(ideology, bins=list(Conservative=6:10,
-                                         Moderate=4:5,
-                                         Liberal=1:3)){
-  labels<-rep(NA,length(ideology))
-  for(bb in 1:length(bins)){
-    labels[ideology%in%bins[[bb]]]<-names(bins)[bb]
-  }
-  return(labels)
-}
 ##########################################################################################
 # Enrolled
 ##########################################################################################
@@ -35,6 +26,7 @@ table_build[["enrolled"]]<-table_row_build(enrol_x)
 # Survey Takers
 ##########################################################################################
 users_x$id_map_hash_id<-users_x$user_id
+users_x$user_id<-NULL
 users_x<-merge(users_x,
                enrol_x[,c("id_map_hash_id","user_id","username","certificate_status",
                           paste0("profile_",c("gender","country","year_of_birth","level_of_education")))],
@@ -163,13 +155,6 @@ FOCup_x<-(upvotes_x$course.post==1)
 ###############################################################################################
 # Activity Counts per person
 ###############################################################################################
-
-# ERROR
-# ERROR
-# ERROR
-# ERROR
-# ERROR
-
 users_x[,paste0(c("reply","comment","upvote"),"_count")]<-NA
 for (x in 1:nrow(users_x)){
   users_x[x,"reply_count"]<-sum(FOCUS_x&(posts_x$user_id==users_x[x,"user_id"])&(posts_x$level==2))
@@ -204,13 +189,6 @@ for(r in 1:nrow(replies_x)){
   }
 }
 replies_x$comment_longs<-replies_x$comment_others-replies_x$comment_shortyes
-##############################################################################################################################################################################################
-# Tripartite
-###############################################################################################
-posts_x$TriPart<-TriPartite(posts_x$leftright)
-posts_x$parent_TriPart<-TriPartite(posts_x$parent_leftright)
-upvotes_x$poster_TriPart<-TriPartite(upvotes_x$poster_leftright)
-upvotes_x$upvote_TriPart<-TriPartite(upvotes_x$upvote_leftright)
 ##############################################################################################################################################################################################
 rm(pc_x,enrol_x,x,r,tpb,MATCH,code.name,not.author,comments,forum.dat,un_x,uv,un,FOCup_x,FOCUS_x)
 ###############################################################
