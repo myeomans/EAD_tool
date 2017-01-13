@@ -212,8 +212,5 @@ posts_x$parent_TriPart<-TriPartite(posts_x$parent_leftright)
 upvotes_x$poster_TriPart<-TriPartite(upvotes_x$poster_leftright)
 upvotes_x$upvote_TriPart<-TriPartite(upvotes_x$upvote_leftright)
 ##############################################################################################################################################################################################
-# Table 4 - Ideology distribution
-round(100*(table(users_x$leftright)/nrow(users_x)),1) 
-##############################################################################################################################################################################################
 rm(pc_x,enrol_x,x,r,tpb,MATCH,code.name,not.author,comments,forum.dat,un_x,uv,un,FOCup_x,FOCUS_x)
 ###############################################################
