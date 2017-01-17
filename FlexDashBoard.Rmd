@@ -34,6 +34,31 @@ plot.title <- "American Government"
 
 Column 
 -----------------------------------------------------------------------
+### **Demographics of course participants**
+
+```{r}
+# source: https://cran.r-project.org/web/packages/htmlTable/vignettes/tables.html
+output <- data.frame( course_enroll = c("5,409", "49.8%", "79.9%", "32 (14.2)", "", "", "14.3%") ,
+                      survey_resp = c("2,009", "57.7%","83.3%","36 (14.5)","52.9%","57.2%","31.8%"),
+                      usa_samp =c("1,340","61.0%","86.2%","38 (14.9)","57.7%","56.0%","32.7%"),
+                      any_act= c("569","59.4%","88.1%","40 (15.1)","63.4%","75.4%","61.0%")
+                      )
+htmlTable(output,
+          header = c("Course Enrollment", "Survey Response", 
+                     "USA Sample", "Any Forum Activity"), 
+          n.tspanner = c(1, 4 ,2), 
+          rnames = c( "Observations",
+                      "% Female",
+                      "College Degree",
+                      "Median Age (SD)",
+                      "% Teachers",
+                      "Intended  Course Completion",
+                      "Actual Course Completion"
+          ) ,
+          tspanner = c("","","")
+             #caption="Basic table with both column spanners (groups) and row groups",
+        )
+```
 
 ### **Ideology and forum activity in substantive course threads**
 
@@ -41,26 +66,6 @@ Column
 makeActivityIdeologyGraph(plot.data = users)
 ```
 
-### **Table 1**
-
-```{r}
-# source: https://cran.r-project.org/web/packages/htmlTable/vignettes/tables.html
-output <- 
-  matrix(paste("Content", LETTERS[1:16]), 
-         ncol=4, byrow = TRUE)
-htmlTable(output,
-          header =  paste(c("1st", "2nd",
-                            "3rd", "4th"), "header"),
-          rnames = paste(c("1st", "2nd",
-                           "3rd", "4th"), "row"),
-          rgroup = c("Group A",
-                     "Group B"),
-          n.rgroup = c(2,2),
-          cgroup = c("Cgroup 1", "Cgroup 2&dagger;"),
-          n.cgroup = c(2,2), 
-          caption="Basic table with both column spanners (groups) and row groups",
-          tfoot="&dagger; A table footer commment")
-```
 
 Column
 -----------------------------------------------------------------------
