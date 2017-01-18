@@ -32,11 +32,11 @@ posts <- posts_hks
 plot.title <- "American Government"
 ```
 
-Column 
+Column {.tabset}
 -----------------------------------------------------------------------
 ### **Demographics of course participants**
 
-```{r}
+```{r }
 # source: https://cran.r-project.org/web/packages/htmlTable/vignettes/tables.html
 output <- data.frame( course_enroll = c("5,409", "49.8%", "79.9%", "32 (14.2)", "", "", "14.3%") ,
                       survey_resp = c("2,009", "57.7%","83.3%","36 (14.5)","52.9%","57.2%","31.8%"),
@@ -62,7 +62,7 @@ htmlTable(output,
 
 ### **Ideology and forum activity in substantive course threads**
 
-```{r}
+```{r ,fig.height = 8}
 makeActivityIdeologyGraph(plot.data = users)
 ```
 
