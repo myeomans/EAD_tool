@@ -4,38 +4,30 @@
 # Modified by: Alejandro Kantor
 ##################################################################
 
-# if more than 10
-# use leftright
-# not leftright_sc 
-# and standarize ourselves for the user  call new measure ideology
 
 makeActivityIdeologyGraph <- function(plot.data){
-  count_col_names <-  c("leftright_sc","reply_count", "comment_count","upvote_count")
+  count_col_names <-  c("leftright","reply_count", "comment_count","upvote_count")
   df_plot <- plot.data[ ,count_col_names]
+  df_plot$ideology <- (df_plot$leftright - mean( df_plot$leftright))/sd( df_plot$leftright)
+  df_plot$leftright <- NULL
+  i_num_ideology <- length(unique(df_plot$ideology))
+  
   num_row <- nrow(df_plot)
   df_plot$correlative <- 1:num_row
-  df_plot <- melt(df_plot, id.vars = c("correlative","leftright_sc"))
+  df_plot <- melt(df_plot, id.vars = c("correlative","ideology"))
   
   levels(df_plot$variable ) <- c("Replies", "Comments", "Upvotes")
   
-  g_plot <- ggplot(df_plot, aes(x=leftright_sc, y=value, group =variable ))+
-    facet_wrap(~ variable, ncol = 1 ,scales = "free") + 
-    geom_point(alpha = 1/5, size = 3) + 
-    #geom_boxplot() +
-    xlab( "Partisan Ideology (Standarized)") +
+  g_plot <- ggplot(df_plot, aes(x=ideology, y=value, group =ideology))+
+    facet_wrap(~ variable, ncol = 1 ,scales = "free") 
+  if( i_num_ideology <= 7 ){
+    g_plot <- g_plot + geom_boxplot(alpha = 0.2)
+  } else {
+    g_plot <- g_plot + geom_jitter(position=position_jitter(.02),alpha=0.2)
+  }
+  g_plot <- g_plot + xlab( "Partisan Ideology (Standarized)") +
     ylab( "Count") +
-    theme(plot.title = element_text(hjust = 0.5, face="bold", size=20),
-          axis.title = element_text(face="bold", size=20),
-          legend.title = element_text(face="bold", size=14),
-          legend.text = element_text(size=15),
-          legend.background = element_rect(fill="white", size=1, linetype="solid",colour="black"),
-          legend.key.size = unit(0.5, "cm"),
-          strip.text.x = element_text(size=15, face="bold"),
-          panel.grid.major = element_line(colour = "grey10"),
-          panel.grid.minor = element_line(colour = "white"),
-          panel.background = element_rect(fill = "white"),
-          panel.border = element_rect(colour = "black", fill=NA, size=2),
-          text = element_text(family="Times"))
+    getTheme()
   
-  return(g_plot)
+   return(g_plot)
 }
