@@ -73,13 +73,13 @@ Column
 ### **Distribution of upvotes per reply in substantive course threads**
 
 ```{r}
-makeUpvoteFacetGraph(plot.data = upvotes, plot.title)
+makeUpvoteFacetGraph(plot.data = upvotes)
 
 ```
 
 ### **Distribution of comments per reply in substantive course threads**
 
 ```{r}
-makeCommentFacetGraph(plot.data = posts, plot.title)
+makeCommentFacetGraph(plot.data = posts)
 ```
 

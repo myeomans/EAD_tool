@@ -12,7 +12,7 @@
 ##################################################################
 
 
-makeCommentFacetGraph <- function( plot.data, plot.title = "Course Name" ){  
+makeCommentFacetGraph <- function( plot.data ){  
   
   plot.top<-120
   legend.place<-array(c(0,0.02,1,0.98),c(2,2))
@@ -29,7 +29,6 @@ makeCommentFacetGraph <- function( plot.data, plot.title = "Course Name" ){
   
   g_plot <- qplot(TriPart, data=plot.data, geom="bar", fill=TriPart) +
     facet_wrap(~ parent_TriPart, strip.position = "bottom") + 
-    ggtitle(plot.title) +
     ylim(0,plot.top) +
     labs(x="Original Poster Ideology",y="Post-Comment Pairs") +
     scale_x_discrete(breaks=NULL) +
