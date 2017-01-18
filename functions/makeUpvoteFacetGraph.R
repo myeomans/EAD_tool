@@ -13,10 +13,6 @@
 
 makeUpvoteFacetGraph <- function( plot.data){  
   
-  plot.top<-40
-  legend.place<-array(c(0,0.02,1,0.98),c(2,2))
-  
-  
   plot.data$TriPart<-plot.data$upvote_TriPart
   plot.data$parent_TriPart<-plot.data$poster_TriPart
   plot.data$self.reply<-0
@@ -31,6 +27,7 @@ makeUpvoteFacetGraph <- function( plot.data){
   plot.data$TriPart<-factor(plot.data$TriPart,levels=c("Liberal","Moderate","Conservative"))
   plot.data$parent_TriPart<-factor(plot.data$parent_TriPart,levels=c("Liberal","Moderate","Conservative"))
   
+  plot.top <- max(table(plot.data$TriPart,plot.data$parent_TriPart))
   
   g_upvote_graph <- qplot(TriPart, data=plot.data, geom="bar", fill=TriPart) +
     facet_wrap(~ parent_TriPart, strip.position = "bottom") + 
