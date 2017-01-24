@@ -4,6 +4,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
@@ -30,6 +31,23 @@ users <- users_hks
 upvotes <- upvotes_hks
 posts <- posts_hks
 plot.title <- "American Government"
+```
+Column {.sidebar}
+-----------------------------------------------------------------------
+### **Upload your data**
+```{r}
+fileInput('file1', 'Choose file to upload',
+                accept = c(
+                  'text/csv',
+                  'text/comma-separated-values',
+                  'text/tab-separated-values',
+                  'text/plain',
+                  '.csv',
+                  '.tsv'
+                )
+      )
+selectInput('s_input', 'Up or Down', c("Up", "Down"))
+
 ```
 
 Column {.tabset}
@@ -63,7 +81,15 @@ htmlTable(output,
 ### **Ideology and forum activity in substantive course threads**
 
 ```{r ,fig.height = 8}
-makeActivityIdeologyGraph(plot.data = users)
+b_is_up <- reactive({
+input$s_input == "Up"
+})
+
+renderPlot({
+if(b_is_up() == TRUE ){
+  makeActivityIdeologyGraph(plot.data = users)  
+}
+})
 ```
 
 
