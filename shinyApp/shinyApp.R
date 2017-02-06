@@ -43,7 +43,12 @@ ui <- dashboardPage(
                                plotOutput("posts_plot", height = 280)),
                   tabPanel("Heat map", plotOutput("heat_plot", height = 280))
                 ),
-                  box(plotOutput("upvotes_plot", height = 280))
+                tabBox(
+                  height = "350px",
+                  tabPanel( "Distribution of upvotes",
+                            plotOutput("upvotes_plot", height = 280)),
+                  tabPanel("Exp vs Actual", plotOutput("expected_actual_plot", height = 280))
+                )
                  # 
                 )
               )
@@ -59,6 +64,7 @@ server <- function(input, output) {
   output$activity_plot <- renderPlotFromCsv(input, "users", makeActivityIdeologyGraph)
   output$heat_plot <- renderPlotFromCsv(input, "posts", plotHeatMap)
   output$descriptive_table <- shiny::renderText({exampleTable()})
+  output$expected_actual_plot <- renderPlotFromCsvTwoInputs(input, "users","posts" , plotExpectedVsActualPosts)
 }
 
 shinyApp(ui, server)

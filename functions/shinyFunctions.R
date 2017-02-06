@@ -63,6 +63,19 @@ renderPlotFromCsv <- function(input, s_file_name, plotFunction){
   })
 }
 
+renderPlotFromCsvTwoInputs <- function(input, s_file_name_1, s_file_name_2, plotFunction){
+  renderPlot({
+    df_data_1 <- dfFromCsv( input, s_file_name_1 )
+    df_data_2 <- dfFromCsv( input, s_file_name_2 )
+    if (is.null(df_data_1) | is.null(df_data_2))  {
+      return(NULL) 
+    } else {
+      return( plotFunction(df_data_1, df_data_2))
+    }
+  })
+}
+
+
 exampleTable <- function(){
   output <- data.frame( course_enroll = c("5,409", "49.8%", "79.9%", "32 (14.2)", "", "", "14.3%") ,
                         survey_resp = c("2,009", "57.7%","83.3%","36 (14.5)","52.9%","57.2%","31.8%"),
