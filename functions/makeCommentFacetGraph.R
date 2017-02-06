@@ -28,10 +28,10 @@ makeCommentFacetGraph <- function( plot.data ){
   
   g_plot <- qplot(TriPart, data=plot.data, geom="bar", fill=TriPart) +
     facet_wrap(~ parent_TriPart, strip.position = "bottom") + 
-    ylim(0,plot.top) +
-    labs(x="Original Poster Ideology",y="Post-Comment Pairs") +
+    ylim(0,plot.top) + scale_fill_brewer( palette = "Set1")+
+    labs(x="Original Poster Ideology",y="Post-Comment Pairs", fill = "Commenter Ideology") +
     scale_x_discrete(breaks=NULL) +
-    scale_fill_discrete(name="Commenter Ideology") +
+    #scale_fill_discrete(name="Commenter Ideology") +
     getTheme()
 
   return(g_plot)

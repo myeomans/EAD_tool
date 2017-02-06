@@ -31,10 +31,10 @@ makeUpvoteFacetGraph <- function( plot.data){
   
   g_upvote_graph <- qplot(TriPart, data=plot.data, geom="bar", fill=TriPart) +
     facet_wrap(~ parent_TriPart, strip.position = "bottom") + 
-    ylim(0,plot.top) +
-    labs(x="Original Poster Ideology",y="Upvote-Post Pairs") +
+    ylim(0,plot.top) +scale_fill_brewer( palette = "Set1")+
+    labs(x="Original Poster Ideology",y="Upvote-Post Pairs", fill = "Upvoter Ideology") +
     scale_x_discrete(breaks=NULL) +
-    scale_fill_discrete(name="Upvoter Ideology") +
+    #scale_fill_discrete(name="Upvoter Ideology") + 
     getTheme() 
   return(g_upvote_graph)
 }
