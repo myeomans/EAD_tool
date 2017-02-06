@@ -38,12 +38,12 @@ ui <- dashboardPage(
                   ),
                   # Boxes need to be put in a row (or column)
                   tabBox(
-                    height = "300px",
+                    height = "350px",
                      tabPanel( "Distribution of comments",
                                plotOutput("posts_plot", height = 280)),
                   tabPanel("Heat map", plotOutput("heat_plot", height = 280))
                 ),
-                  box(plotOutput("upvotes_plot", height = 250))
+                  box(plotOutput("upvotes_plot", height = 280))
                  # 
                 )
               )
