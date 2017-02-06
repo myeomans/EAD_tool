@@ -4,7 +4,7 @@
 #    code: Alejandro Kantor
 
 
-plotExpectedVsActualPosts <- function( dt_user, dt_post, s_user_ideology, s_post_ideology){
+plotExpectedVsActualPosts <- function( dt_user, dt_post, s_user_ideology ="leftright" , s_post_ideology = "parent_leftright"){
   dt_user <- data.table(dt_user)
   dt_post <- data.table(dt_post)
   dt_freq_user <- dt_user[ , .(freq_user = .N), keyby = s_user_ideology]
