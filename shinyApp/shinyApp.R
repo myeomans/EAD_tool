@@ -37,9 +37,14 @@ ui <- dashboardPage(
                     tabPanel("Activity in Threads", plotOutput("activity_plot" , height = 600))
                   ),
                   # Boxes need to be put in a row (or column)
-                  box(plotOutput("upvotes_plot", height = 250)),
-                  box(plotOutput("posts_plot", height = 250))
-                  # 
+                  tabBox(
+                    height = "300px",
+                     tabPanel( "Distribution of comments",
+                               plotOutput("posts_plot", height = 280)),
+                  tabPanel("Heat map", plotOutput("heat_plot", height = 280))
+                ),
+                  box(plotOutput("upvotes_plot", height = 250))
+                 # 
                 )
               )
     )
@@ -52,6 +57,7 @@ server <- function(input, output) {
   output$upvotes_plot <- renderPlotFromCsv(input, "upvotes", makeUpvoteFacetGraph)
   output$posts_plot <- renderPlotFromCsv(input, "posts", makeCommentFacetGraph)
   output$activity_plot <- renderPlotFromCsv(input, "users", makeActivityIdeologyGraph)
+  output$heat_plot <- renderPlotFromCsv(input, "posts", plotHeatMap)
   output$descriptive_table <- shiny::renderText({exampleTable()})
 }
 
