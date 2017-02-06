@@ -58,7 +58,7 @@ renderPlotFromCsv <- function(input, s_file_name, plotFunction){
     if (is.null(df_data)) {
       return(NULL) 
     } else {
-      return( plotFunction(plot.data = df_data))
+      return( plotFunction(df_data))
     }
   })
 }
