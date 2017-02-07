@@ -150,11 +150,12 @@ posts_x$self.reply<-1*((posts_x$parent_name==posts_x$author_username)|(posts_x$t
 posts_x$admin<-posts_x$issue<-0
 upvotes_x$admin<-upvotes_x$issue<-0
 
-FOCUS_x<-(posts_x$course.post==1)&(posts_x$self.reply==0)
-FOCup_x<-(upvotes_x$course.post==1)
 ###############################################################################################
 # Activity Counts per person
 ###############################################################################################
+FOCUS_x<-(posts_x$course.post==1)&(posts_x$self.reply==0)
+FOCup_x<-(upvotes_x$course.post==1)
+
 users_x[,paste0(c("reply","comment","upvote"),"_count")]<-NA
 for (x in 1:nrow(users_x)){
   users_x[x,"reply_count"]<-sum(FOCUS_x&(posts_x$user_id==users_x[x,"user_id"])&(posts_x$level==2))
@@ -166,29 +167,29 @@ table_build[["forum_active"]]<-table_row_build(users_x[users_x$activities>0,])
 ###############################################################################################
 # Reply-Level Data
 ###############################################################################################
-# Are replies necessary??
-
-replies_x<-posts_x[(posts_x$level==2)&(posts_x$course.post==1)&(posts_x$admin==0),]
-
-replies_x[,c(paste0("comment_",c("count","others","shortyes")),"upvote_count")]<-0
-replies_x[,paste0("comment_",c("","others_","shortyes_","longs_"),"leftright")]<-NA
-tpb<-txtProgressBar(0,nrow(replies_x))
-for(r in 1:nrow(replies_x)){
-  replies_x[r,"upvote_count"]<-sum((upvotes_x$mongoid==replies_x[x,"mongoid"]))
-  comments<-posts_x[(posts_x$level==3)&(posts_x$parent_ids==replies_x[r,"mongoid"]),]
-  if(nrow(comments)>0){
-    not.author<-(comments$author_id!=replies_x[r,"author_id"])
-    replies_x[r,"comment_count"]<-nrow(comments)
-    replies_x[r,"comment_others"]<-sum(not.author)
-    replies_x[r,"comment_shortyes"]<-sum(not.author&(comments$shortyes==1))
-    replies_x[r,"comment_leftright"]<-mean(comments[,"leftright"],na.rm=T)
-    replies_x[r,"comment_others_leftright"]<-mean(comments[not.author,"leftright"],na.rm=T)
-    replies_x[r,"comment_shortyes_leftright"]<-mean(comments[not.author&(comments$shortyes==1),"leftright"],na.rm=T)
-    replies_x[r,"comment_longs_leftright"]<-mean(comments[not.author&(comments$shortyes==0),"leftright"],na.rm=T)
-    setTxtProgressBar(tpb, value=r)
-  }
-}
-replies_x$comment_longs<-replies_x$comment_others-replies_x$comment_shortyes
+# # Are replies necessary??
+# 
+# replies_x<-posts_x[(posts_x$level==2)&(posts_x$course.post==1)&(posts_x$admin==0),]
+# 
+# replies_x[,c(paste0("comment_",c("count","others","shortyes")),"upvote_count")]<-0
+# replies_x[,paste0("comment_",c("","others_","shortyes_","longs_"),"leftright")]<-NA
+# tpb<-txtProgressBar(0,nrow(replies_x))
+# for(r in 1:nrow(replies_x)){
+#   replies_x[r,"upvote_count"]<-sum((upvotes_x$mongoid==replies_x[x,"mongoid"]))
+#   comments<-posts_x[(posts_x$level==3)&(posts_x$parent_ids==replies_x[r,"mongoid"]),]
+#   if(nrow(comments)>0){
+#     not.author<-(comments$author_id!=replies_x[r,"author_id"])
+#     replies_x[r,"comment_count"]<-nrow(comments)
+#     replies_x[r,"comment_others"]<-sum(not.author)
+#     replies_x[r,"comment_shortyes"]<-sum(not.author&(comments$shortyes==1))
+#     replies_x[r,"comment_leftright"]<-mean(comments[,"leftright"],na.rm=T)
+#     replies_x[r,"comment_others_leftright"]<-mean(comments[not.author,"leftright"],na.rm=T)
+#     replies_x[r,"comment_shortyes_leftright"]<-mean(comments[not.author&(comments$shortyes==1),"leftright"],na.rm=T)
+#     replies_x[r,"comment_longs_leftright"]<-mean(comments[not.author&(comments$shortyes==0),"leftright"],na.rm=T)
+#     setTxtProgressBar(tpb, value=r)
+#   }
+# }
+# replies_x$comment_longs<-replies_x$comment_others-replies_x$comment_shortyes
 ##############################################################################################################################################################################################
 rm(pc_x,enrol_x,x,r,tpb,MATCH,code.name,not.author,comments,forum.dat,un_x,uv,un,FOCup_x,FOCUS_x)
 ###############################################################

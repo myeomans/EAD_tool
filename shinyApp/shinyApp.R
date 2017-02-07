@@ -31,9 +31,8 @@ ui <- dashboardPage(
       tabItem(tabName = "users",
               h2("User Information"),
               fluidRow(
-                tabBox(
-                  height = "600px",
-                  tabPanel("Example Table", htmlOutput("descriptive_table"))
+                box(
+                  tabPanel("Users Descriptive Statistics", htmlOutput("descriptive_table"))
                 )
       )),
       tabItem(tabName = "forum",
