@@ -3,6 +3,7 @@ library(shinydashboard)
 library(ggplot2)
 library(reshape2)
 library(htmlTable)
+library(data.table)
 loadOrSourceFiles <- function(path, pattern = NULL,ignore.case = FALSE, load = TRUE ){
   files <- list.files(path = path,pattern = pattern,ignore.case = ignore.case)
   for( file in files){
@@ -27,13 +28,20 @@ ui <- dashboardPage(
               p("Upload your data with the following specifications:"),
               h3("Data checks")
               ),
-      tabItem(tabName = "dashboard",
-              h2("Dashboard"),
+      tabItem(tabName = "users",
+              h2("User Information"),
+              fluidRow(
+                tabBox(
+                  height = "600px",
+                  tabPanel("Example Table", htmlOutput("descriptive_table"))
+                )
+      )),
+      tabItem(tabName = "forum",
+              h2("Forum Activity"),
                 # Boxes need to be put in a row (or column)
                 fluidRow(
                   tabBox(
                     height = "600px",
-                    tabPanel("Example Table", htmlOutput("descriptive_table")),
                     tabPanel("Activity in Threads", plotOutput("activity_plot" , height = 600))
                   ),
                   # Boxes need to be put in a row (or column)

@@ -15,7 +15,8 @@ dashboardSideBarCsvInput <- function(){
   dashboardSidebar(
     sidebarMenu(
       menuItem("Instructions", tabName = "instructions" ),
-      menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard"))
+      menuItem("Users", tabName = "users"),
+      menuItem("Forum Activity", tabName = "forum")
     ),
     fileInputCsv( "users", 'Upload users data'),
     tags$hr(), 
