@@ -4,10 +4,8 @@ fileInputCsv <- function(s_obj_name , s_title){
                    accept = c(
                      'text/csv',
                      'text/comma-separated-values',
-                     'text/tab-separated-values',
                      'text/plain',
-                     '.csv',
-                     '.tsv'
+                     '.csv'
                    )
   )
 }
@@ -17,27 +15,17 @@ dashboardSideBarCsvInput <- function(){
       menuItem("Instructions", tabName = "instructions" ),
       menuItem("Users", tabName = "users"),
       menuItem("Forum Activity", tabName = "forum")
-    )
-    # fileInputCsv( "users", 'Upload users data'),
-    # tags$hr(), 
-    # fileInputCsv('posts', 'Upload posts data'),
-    # tags$hr(),
-    # fileInputCsv('upvotes', 'Upload upvote data'),
-    # tags$hr(),
-    # checkboxInput('header', 'Header', TRUE),
-    # radioButtons('sep', 'Separator',
-    #              c(Comma=',',
-    #                Semicolon=';',
-    #                Tab='\t'),
-    #              ','),
-    # radioButtons('quote', 'Quote',
-    #              c(None='',
-    #                'Double Quote'='"',
-    #                'Single Quote'="'"),
-    #              '"'),
-    #tags$hr()
+    ),
+    fileInputCsv( "users", 'Upload users data'),
+    tags$hr(), 
+    fileInputCsv('posts', 'Upload posts data'),
+    tags$hr(),
+    fileInputCsv('upvotes', 'Upload upvote data'),
+    tags$hr()
   )
 }
+
+
 
 dfFromCsv <- function(input, s_file_name){
   l_in_file <- input[[s_file_name]]
@@ -46,8 +34,7 @@ dfFromCsv <- function(input, s_file_name){
     return(NULL) 
     
   } else {
-    df_data <- read.csv(l_in_file$datapath, header = input$header,
-                        sep = input$sep, quote = input$quote)
+    df_data <- read.csv(l_in_file$datapath, header = T, stringsAsFactors = F)
     return( df_data )
   }
 }
@@ -84,8 +71,8 @@ exampleTable <- function(){
                         any_act= c("569","59.4%","88.1%","40 (15.1)","63.4%","75.4%","61.0%")
   )
   htmlTable(output,
-            header = c("Course Enrollment", "Survey Response", 
-                       "USA Sample", "Any Forum Activity"), 
+            header = paste0("&nbsp;&nbsp;&nbsp;",c("Enrolled in Course", "Answered Survey", 
+                       "From USA", "Active In Forum"),"&nbsp;&nbsp;&nbsp;"), 
             n.tspanner = c(1, 4 ,2), 
             rnames = c( "Observations",
                         "% Female",
