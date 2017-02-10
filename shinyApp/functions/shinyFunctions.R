@@ -19,26 +19,19 @@ dfFromCsv <- function(input, s_file_name){
   }
 }
 
-renderTableFromCsv <- function(input, s_file_name_1, s_file_name_2, s_file_name_3, tableFunction){
+renderTableFromCsv <- function(input, s_file_name_1, s_file_name_2, s_file_name_3, tableFunction, ...){
   shiny::renderText({
     df_data_1 <- dfFromCsv( input, s_file_name_1 )
     df_data_2 <- dfFromCsv( input, s_file_name_2 )
     df_data_3 <- dfFromCsv( input, s_file_name_3 )
-    ifelse(is.null(df_data_1), NULL, tableFunction(df_data_1,df_data_2,df_data_3, input$start.date))
+    ifelse(is.null(df_data_1), NULL, tableFunction(df_data_1,df_data_2,df_data_3, ...))
   })
 }
 
-renderPlotFromCsv <- function(input, s_file_name, plotFunction){
-  shiny::renderPlot({
-    df_data <- dfFromCsv( input, s_file_name )
-    ifelse(is.null(df_data), NULL, plotFunction(df_data))
-  })
-}
-
-renderPlotFromCsvTwoInputs <- function(input, s_file_name_1, s_file_name_2, plotFunction){
+renderPlotFromCsvTwoInputs <- function(input, s_file_name_1, s_file_name_2, plotFunction, ...){
   shiny::renderPlot({
     df_data_1 <- dfFromCsv( input, s_file_name_1 )
     df_data_2 <- dfFromCsv( input, s_file_name_2 )
-    ifelse((is.null(df_data_1) | is.null(df_data_2)), NULL, plotFunction(df_data_1, df_data_2))
+    ifelse((is.null(df_data_1) | is.null(df_data_2)), NULL, plotFunction(df_data_1, df_data_2, ...))
   })
 }

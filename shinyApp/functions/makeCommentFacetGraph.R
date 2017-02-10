@@ -12,9 +12,7 @@
 ##################################################################
 
 
-makeCommentFacetGraph <- function( plot.data ){  
-  
-  
+makeCommentFacetGraph <- function(plot.data, settings){  
   ##################################################################
   plot.data<-plot.data[(plot.data$TriPart!="")&(plot.data$parent_TriPart!="")&(plot.data$self.reply==0),]
   plot.data<-plot.data[(plot.data$level==3)&(plot.data$course.post==1)&(plot.data$admin==0)&(plot.data$shortyes==0),]

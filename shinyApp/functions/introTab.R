@@ -7,7 +7,7 @@ introTab<-function(){
                 width = 5,
                 h2("Upload Datasets"),
                 p("CSV files only"),
-                fileInputCsv('users', 'User data'),
+                fileInputCsv('survey', 'Survey data'),
                 fileInputCsv('posts', 'Post data'),
                 fileInputCsv('upvotes', 'Upvote data'),
                 shiny::tags$hr(),
@@ -24,11 +24,8 @@ introTab<-function(){
                 p("Separate with commas (e.g. \"Matthew, Mark, Luke, John\")"),
                 h3("Filters for Analysis"),
                 checkboxInput('course.only', 'Exclude Student-Created Threads', value=TRUE),
-                checkboxInput('self.posts', 'Exclude Comments to Own Posts', value=TRUE),
-                checkboxInput('usa.only', 'American Students Only', value=TRUE)
-                
+                checkboxInput('self.posts', 'Exclude Comments to Own Posts', value=TRUE)
             )
           )
-          
   )
 }

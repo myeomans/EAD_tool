@@ -4,12 +4,13 @@
 # Modified by: Alejandro Kantor
 ##################################################################
 
-
-makeActivityIdeologyGraph <- function(plot.data){
+makeActivityIdeologyGraph <- function(plot.data, settings){
+  plot.data<-plot.data[!is.na(plot.data[,settings$of.interest]),]
+  if(settings$usa.only){plot.data<-plot.data[plot.data$USA==1,]}
   count_col_names <-  c("leftright","reply_count", "comment_count","upvote_count")
   df_plot <- plot.data[ ,count_col_names]
-  df_plot$ideology <- (df_plot$leftright - mean( df_plot$leftright))/sd( df_plot$leftright)
-  df_plot$leftright <- NULL
+  df_plot$ideology <- as.numeric(scale(df_plot[,settings$of.interest]))
+  df_plot[,settings$of.interest] <- NULL
   i_num_ideology <- length(unique(df_plot$ideology))
   
   num_row <- nrow(df_plot)

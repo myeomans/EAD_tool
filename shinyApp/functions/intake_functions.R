@@ -1,4 +1,93 @@
-post_process<-function(posts_data,course.start.date){
+###############################################################################################
+###############################################################################################
+data.checker<-function(posts_x, forum_x, enrol_x, survey_x, of.interest="wvs.survey",
+                       USA.only=TRUE, self.posts=FALSE, course.threads.only=TRUE,
+                       course.name="Course", start.date=NULL, course.team.names=NULL){
+  ###############################################################################################
+  # Cleaning (dull, slow, offloaded)
+  ###############################################################################################
+  # User Population
+  users_x<-users_process(survey_x, enrol_x, start.date)
+  # Forum Structure
+  posts_x<-post_process(posts_x, start.date)
+  upvotes_x<-upvote_process(forum_x)
+  ###############################################################################################
+  # Distribution of Interest Scores
+  ###############################################################################################
+  user.data$leftright<-user.data[,of.interest]
+  user.data$included<-1*(!is.na(user.data$leftright))
+  if(USA.only) user.data[user.data$USA!=1,"included"]<-FALSE
+  
+  posts_x<-merge(posts_x,users_x[users_x$included==1,c("user_id","leftright")],by="user_id", all.x=T)
+  ###############################################################################################
+  ###############################################################################################
+  # Merging User Data Into Forum Activity
+  ###############################################################################################
+  posts_x[,c("toppost_leftright","parent_leftright")]<-NA
+  for (x in 1:nrow(posts_x)){
+    try(posts_x[x,]$toppost_leftright<-posts_x[posts_x$mongoid==posts_x[x,"comment_thread_id"],]$leftright,silent=T)
+    if(posts_x[x,]$level==3){
+      try(posts_x[x,]$parent_leftright<-posts_x[posts_x$mongoid==posts_x[x,"parent_ids"],]$leftright,silent=T)
+    }
+  }
+  ###############################################################################################
+  #upvotes_x<-merge(upvotes_x,posts_x[,c("mongoid","thread_id","username")],by="mongoid", all.x=T)
+  #names(upvotes_x)[names(upvotes_x)=="username"]<-"poster_username"
+  upvotes_x[,c("poster_username","thread_id","poster_leftright","upvote_leftright")]<-NA
+  for (uv in 1:nrow(upvotes_x)){
+    try(upvotes_x[uv,]$thread_id<-posts_x[posts_x$mongoid==upvotes_x[uv,]$mongoid,"thread_id"],silent=T)
+    try(upvotes_x[uv,]$poster_username<-posts_x[posts_x$mongoid==upvotes_x[uv,]$mongoid,"username"], silent=T)
+    try(upvotes_x[uv,]$poster_leftright<-as.numeric(unlist(users_x[users_x$username==upvotes_x[uv,]$poster_username,"leftright"]),silent=T))
+    try(upvotes_x[uv,]$upvote_leftright<-as.numeric(unlist(users_x[users_x$username==upvotes_x[uv,]$upvote_username,"leftright"]),silent=T))
+  }
+  upvotes_x$course.post<-1*(upvotes_x$thread_id%in%posts_x[(posts_x$course.post==1)&(posts_x$level==1),"thread_id"])
+  ###############################################################################################
+  # User-Level Activity Counts
+  ###############################################################################################
+  FOCUS_x<-ifelse(self.reply,(posts_x$course.post==1),(posts_x$course.post==1)&(posts_x$self.reply==0))
+  FOCup_x<-(upvotes_x$course.post==1)
+  
+  users_x[,paste0(c("reply","comment","upvote"),"_count")]<-NA
+  for (x in 1:nrow(users_x)){
+    users_x[x,"reply_count"]<-sum(FOCUS_x&(posts_x$user_id==users_x[x,"user_id"])&(posts_x$level==2))
+    users_x[x,"comment_count"]<-sum(FOCUS_x&(posts_x$user_id==users_x[x,"user_id"])&(posts_x$level==3))
+    users_x[x,"upvote_count"]<-sum(FOCup_x&(upvotes_x$upvote_username==users_x[x,"username"]),na.rm=T)
+  }
+  users_x$activities<-rowSums(users_x[,paste0(c("reply","comment","upvote"),"_count")])
+  ###############################################################################################
+  return(list(users=users_x,
+              posts=posts_x,
+              upvotes=upvotes_x))
+}
+###############################################################################################
+###############################################################################################
+users_process<-function(user.data, enrol.data, start.date){
+  if((sum(colnames(user.data)[1:10]==paste0("V",1:10))==10)){
+    colnames(user.data)[1:10]<-as.character(unlist(user.data[1,1:10]))
+    user.data<-user.data[2:nrow(user.data),]
+  }
+  ###############################################################################################
+  user.data$id_map_hash_id<-user.data$user_id
+  user.data$user_id<-NULL
+  user.data<-merge(user.data,
+                   enrol.data[,c("id_map_hash_id","user_id","username","certificate_status",
+                                 paste0("profile_",c("gender","country","year_of_birth","level_of_education")))],
+                   by="id_map_hash_id", all.x=F)
+  user.data<-user.data[!duplicated(user.data$user_id),]
+  ###############################################################################################
+  user.data$USA<-1*((user.data$profile_country=="US"))
+  user.data$certified<-1*(user.data$certificate_status=="downloadable")
+  user.data$profile_bachelors<-1*(user.data$profile_level_of_education%in%c("b","a","m","p","p_oth","p_se"))
+  user.data$profile_age<-as.numeric(substr(start.date, 0, 4))-user.data$profile_year_of_birth
+  user.data$teacher<-1*(user.data$teach=="Yes")
+  user.data$intent<-1*(grepl("enough",user.data$reason))
+  user.data$wvs.survey<-as.numeric(substr(user.data$wvsurvey_1,0,2))
+  ###############################################################################################
+  return(user.data)
+}
+###############################################################################################
+###############################################################################################
+post_process<-function(posts_data,start.date){
   ###############################################################################################
   posts_data$level<-3
   posts_data[(posts_data$parent_ids==""),"level"]<-2
@@ -10,7 +99,7 @@ post_process<-function(posts_data,course.start.date){
   posts_data$post_count<-posts_data$comment_count
   posts_data$username<-posts_data$author_username
   posts_data$abuse<-1*(posts_data$abuse_flaggers!="[]")
-  posts_data$span<-floor(as.numeric(difftime(posts_data$created_at,paste0(course.start.date,"12:00 GMT"), units="days")))
+  posts_data$span<-floor(as.numeric(difftime(posts_data$created_at,paste0(start.date,"12:00 GMT"), units="days")))
   posts_data$word_count<-qdap::word_count(posts_data$body,missing=0)
   posts_data$shortyes<-1*(posts_data$word_count<4)
   ###############################################################################################
@@ -33,8 +122,9 @@ post_process<-function(posts_data,course.start.date){
   ###############################################################################################
   return(posts_data)
 }
-
-upvote_process<-function(forum_data){
+###############################################################################################
+###############################################################################################
+upvotes_process<-function(forum_data){
   forum_data$mongoid<-forum_data$thread_id
   forum_data$upvote_username<-forum_data$username
   forum_data$personpost<-paste0(forum_data$username,forum_data$mongoid)
@@ -53,3 +143,17 @@ upvote_process<-function(forum_data){
   ###############################################################################################
   return(upvotes_data)
 }
+###############################################################################################
+###############################################################################################
+
+############################################################
+enrol_process<-function(enrol.data,pc.data, start.date){
+  enrol.enter<-merge(enrol.data,pc.data[,c("user_id","viewed")],by="user_id", all.x=T)
+  enrol.enter<-enrol.enter[(enrol.enter$viewed=="True"),]
+  enrol.enter$USA<-1*((enrol.enter$profile_country=="US"))
+  enrol.enter$certified<-1*(enrol.enter$certificate_status=="downloadable")
+  enrol.enter$profile_bachelors<-1*(enrol.enter$profile_level_of_education%in%c("b","a","m","p","p_oth","p_se"))
+  enrol.enter$profile_age<-as.numeric(substr(start.date, 0, 4))-enrol.enter$profile_year_of_birth
+  return(enrol.enter)
+}
+############################################################

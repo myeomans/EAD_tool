@@ -1,59 +1,57 @@
 ############################################################
+# Quick Summary Statistics
+############################################################
 pct_rounded<-function(x){
   return(round(100*mean(x, na.rm=T),1))
 }
-table_row_build<-function(data, course.start.date){
-  if(!("profile_age"%in%names(data))){
-    data$profile_age<-(as.numeric(substr(course.start.date, 0, 4))-data$profile_year_of_birth)
-  }
-  row.values<-list(certified=pct_rounded(data$certificate_status=="downloadable"),
-                   female=pct_rounded(data$profile_gender=="f"),
-                   bachelors=pct_rounded(data$profile_level_of_education%in%c("b","a","m","p","p_oth","p_se")),
-                   USA=pct_rounded(data$profile_country=="US"),
-                   age=paste(median(data$profile_age, na.rm=T),round(sd(data$profile_age, na.rm=T),1)),
-                   teacher=pct_rounded(data$teach=="Yes"),
-                   intent=pct_rounded(grepl("enough",data$reason)),
-                   students=nrow(data))
+############################################################
+table_row_build<-function(data){
+  row.values<-list()
+  row.values[["Observations"]]<-nrow(data)
+  row.values[["% Female"]]<-pct_rounded(data$profile_gender=="f")
+  row.values[["College Degree"]]<-pct_rounded(data$profile_bachelors==1)
+  row.values[["% from USA"]]<-pct_rounded(data$USA==1)
+  row.values[["Median Age (SD)"]]<-paste0(median(data$profile_age, na.rm=T)," (",round(sd(data$profile_age, na.rm=T),1),")")
+  row.values[["% Teachers"]]<-pct_rounded(data$teacher==1)
+  row.values[["Intended Course Completion"]]<-pct_rounded(grepl("enough",data$reason))#pct_rounded(data$intent),
+  row.values[["Actual Course Completion"]]<-pct_rounded(data$certified)
   return(row.values)
 }
 ############################################################
-# These lists could be user-adjusted
 ############################################################
-table.row.names<-c( "Observations",
-                    "% Female",
-                    "College Degree",
-                    "Median Age (SD)",
-                    "% Teachers",
-                    "Intended  Course Completion",
-                    "Actual Course Completion")
-
-table.columns<-c("Enrolled in Course", "Answered WVS", "From USA", "Active In Forum") 
-############################################################
-
-demoTable <- function(user.data=NULL,enrol.data=NULL,pc.data=NULL, start.date){
+demoTable <- function(user.data=NULL,enrol.data=NULL, pc.data=NULL, settings){
   if(is.null(user.data)){ 
     return(NULL)
   } else {
     table_build<-list()
     if ((!is.null(enrol.data))&!is.null(pc.data)){
-      enrol.data<-merge(enrol.data,pc.data[,c("user_id","viewed")],by="user_id")
-      enrol.data<-enrol.data[(enrol.data$viewed=="True"),]
-      table_build[["enrolled"]]<-table_row_build(enrol.data, start.date)
+      enrol.enter<-enrol_process(enrol.data,pc.data,settings$start.date)
+      table_build[["Enrolled in Course"]]<-table_row_build(enrol.enter)
     }
-    table_build[["surveyed"]]<-table_row_build(user.data[!is.na(user.data$leftright),], start.date)
-    table_build[["ideology_USA"]]<-table_row_build(user.data[(!is.na(user.data$leftright))&(user.data$USA==1),], start.date)
-    table_build[["forum_active"]]<-table_row_build(user.data[user.data$activities>0,], start.date)
-    #output<- data.frame(table_build)
+    user.data$included<-1*(!is.na(user.data[,settings$of.interest]))
+    table_build[["Answered WVS"]]<-table_row_build(user.data[(user.data$included==1),])
+    if(settings$usa.only){
+      user.data$included<-1*(!is.na(user.data[,settings$of.interest]))&(user.data$USA==1)
+      table_build[["From USA"]]<-table_row_build(user.data[(user.data$included==1),])
+    }
+    table_build[["Active In Forum"]]<-table_row_build(user.data[(user.data$included==1)&(user.data$activities>0),])
+    output<-do.call(cbind, table_build)
     
-    output <- data.frame( course_enroll = c("5,409", "49.8%", "79.9%", "32 (14.2)", "", "", "14.3%") ,
-                          survey_resp = c("2,009", "57.7%","83.3%","36 (14.5)","52.9%","57.2%","31.8%"),
-                          usa_samp =c("1,340","61.0%","86.2%","38 (14.9)","57.7%","56.0%","32.7%"),
-                          any_act= c("569","59.4%","88.1%","40 (15.1)","63.4%","75.4%","61.0%")
-    )
     return(htmlTable(output,
-                     header = paste0("&nbsp;&nbsp;&nbsp;",table.columns,"&nbsp;&nbsp;&nbsp;"), 
-                     n.tspanner = c(1, 4 ,2), 
-                     rnames = table.row.names,
+                     header = paste0("&nbsp;&nbsp;&nbsp;",names(table_build),"&nbsp;&nbsp;&nbsp;"), 
+                     n.tspanner = c(1, 5 ,2), 
+                     rnames = names(table_build[[1]]),
                      tspanner = c("","","")
     ))}
+}
+
+############################################################
+enrol_process<-function(enrol.data,pc.data, start.date){
+  enrol.enter<-merge(enrol.data,pc.data[,c("user_id","viewed")],by="user_id", all.x=T)
+  enrol.enter<-enrol.enter[(enrol.enter$viewed=="True"),]
+  enrol.enter$USA<-1*((enrol.enter$profile_country=="US"))
+  enrol.enter$certified<-1*(enrol.enter$certificate_status=="downloadable")
+  enrol.enter$profile_bachelors<-1*(enrol.enter$profile_level_of_education%in%c("b","a","m","p","p_oth","p_se"))
+  enrol.enter$profile_age<-as.numeric(substr(start.date, 0, 4))-enrol.enter$profile_year_of_birth
+  return(enrol.enter)
 }

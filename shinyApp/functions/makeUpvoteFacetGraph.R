@@ -5,7 +5,7 @@
 
 ##################################################################
 
-makeUpvoteFacetGraph <- function(plot.data){  
+makeUpvoteFacetGraph <- function(plot.data, settings){  
   
   plot.data$TriPart<-plot.data$upvote_TriPart
   plot.data$parent_TriPart<-plot.data$poster_TriPart
