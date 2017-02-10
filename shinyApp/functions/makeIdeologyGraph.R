@@ -4,7 +4,6 @@
 # Modified by: Alejandro Kantor
 ##################################################################
 
-
 makeIdeologyGraph <- function(plot.data){
   if(length(unique(plot.data$leftright))<5){
   num_row <- nrow(plot.data)

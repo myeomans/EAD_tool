@@ -1,7 +1,7 @@
 ##########################################################################################
 # DATA LOAD
 ##########################################################################################
-source("./intake_functions.R")
+source("./functions/intake_functions.R")
 
 course.folder<-"/DATA/spencer/hks101mike/"
 posts_ag<-read.csv(paste0(course.folder,"forum.csv"),stringsAsFactors=F)

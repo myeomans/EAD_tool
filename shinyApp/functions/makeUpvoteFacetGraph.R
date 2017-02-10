@@ -4,14 +4,8 @@
 # Modified by: Alejandro Kantor
 
 ##################################################################
-# Groupings
 
-#table(posts_gse$TriPart,posts_gse$parent_TriPart)
-#table(posts_hks$TriPart,posts_hks$parent_TriPart)
-
-##################################################################
-
-makeUpvoteFacetGraph <- function( plot.data){  
+makeUpvoteFacetGraph <- function(plot.data){  
   
   plot.data$TriPart<-plot.data$upvote_TriPart
   plot.data$parent_TriPart<-plot.data$poster_TriPart
