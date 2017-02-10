@@ -47,35 +47,48 @@ ui <- dashboardPage(
 ##########################################################################
 server <- function(input, output) {
   output$upvotes_plot <-shiny::renderPlot({
-    makeUpvoteFacetGraph(dfFromCsv(input, "upvotes"),input)
+    makeUpvoteFacetGraph(dfFromCsv(input, "survey"),
+                         dfFromCsv(input, "upvotes"),
+                         input)
   })
   
   output$posts_plot <-shiny::renderPlot({
-    makeCommentFacetGraph(dfFromCsv(input, "posts"),input)
+    makeCommentFacetGraph(dfFromCsv(input, "survey"),
+                          dfFromCsv(input, "posts"),
+                          input)
   })
-
+  
   output$activity_plot <-shiny::renderPlot({
-    makeActivityIdeologyGraph(dfFromCsv(input, "survey"),input)
+    makeActivityIdeologyGraph(dfFromCsv(input, "survey"),
+                              dfFromCsv(input, "posts"),
+                              dfFromCsv(input, "upvotes"),
+                              input)
   })
   
   output$distribution_plot <-shiny::renderPlot({
-    makeIdeologyGraph(dfFromCsv(input, "survey"),input)
+    makeIdeologyGraph(dfFromCsv(input, "survey"),
+                      dfFromCsv(input, "posts"),
+                      input)
   })
   
   output$descriptive_table <-shiny::renderText({
     demoTable(dfFromCsv(input, "survey"),
               dfFromCsv(input, "enrol"),
               dfFromCsv(input, "personcourse"), 
+              dfFromCsv(input, "posts"),
               input)
   })
   
   # Needs to be lower-dimensional... e.g. Tripartite
   output$heat_plot <-shiny::renderPlot({
-    renderPlotFromCsv(dfFromCsv(input, "posts"),input)
+    plotHeatMap(dfFromCsv(input, "posts"),input)
   })
-
-  # What is the point of this?
-  output$expected_actual_plot <- renderPlotFromCsvTwoInputs(input, "survey","posts", plotExpectedVsActualPosts)
+  
+  output$expected_actual_plot<-shiny::renderPlot({
+    plotExpectedVsActualPosts(dfFromCsv(input, "survey"),
+                              dfFromCsv(input, "posts"), 
+                              input)
+  })
 }
 
 shinyApp(ui, server)

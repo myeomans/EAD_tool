@@ -1,12 +1,37 @@
 ###############################################################################################
+# Alejandro's Shiny interfaces
 ###############################################################################################
-data.checker<-function(posts_x, forum_x, enrol_x, survey_x, of.interest="wvs.survey",
+fileInputCsv <- function(s_obj_name , s_title){
+  shiny::fileInput(s_obj_name, s_title,
+                   accept = c(
+                     'text/csv',
+                     'text/comma-separated-values',
+                     'text/plain',
+                     '.csv'
+                   )
+  )
+}
+
+dfFromCsv <- function(input, s_file_name){
+  l_in_file <- input[[s_file_name]]
+  if (is.null(l_in_file)) {
+    return(NULL) 
+  } else {
+    df_data <- read.csv(l_in_file$datapath, stringsAsFactors = F)
+    return(df_data)
+  }
+}
+
+###############################################################################################
+###############################################################################################
+data.checker<-function(posts_x, forum_x, enrol_x, survey_x, of.interest="leftright",
                        USA.only=TRUE, self.posts=FALSE, course.threads.only=TRUE,
                        course.name="Course", start.date=NULL, course.team.names=NULL){
   ###############################################################################################
   # Cleaning (dull, slow, offloaded)
   ###############################################################################################
   # User Population
+
   users_x<-users_process(survey_x, enrol_x, start.date)
   # Forum Structure
   posts_x<-post_process(posts_x, start.date)
@@ -14,12 +39,8 @@ data.checker<-function(posts_x, forum_x, enrol_x, survey_x, of.interest="wvs.sur
   ###############################################################################################
   # Distribution of Interest Scores
   ###############################################################################################
-  user.data$leftright<-user.data[,of.interest]
-  user.data$included<-1*(!is.na(user.data$leftright))
-  if(USA.only) user.data[user.data$USA!=1,"included"]<-FALSE
   
   posts_x<-merge(posts_x,users_x[users_x$included==1,c("user_id","leftright")],by="user_id", all.x=T)
-  ###############################################################################################
   ###############################################################################################
   # Merging User Data Into Forum Activity
   ###############################################################################################
@@ -41,19 +62,6 @@ data.checker<-function(posts_x, forum_x, enrol_x, survey_x, of.interest="wvs.sur
     try(upvotes_x[uv,]$upvote_leftright<-as.numeric(unlist(users_x[users_x$username==upvotes_x[uv,]$upvote_username,"leftright"]),silent=T))
   }
   upvotes_x$course.post<-1*(upvotes_x$thread_id%in%posts_x[(posts_x$course.post==1)&(posts_x$level==1),"thread_id"])
-  ###############################################################################################
-  # User-Level Activity Counts
-  ###############################################################################################
-  FOCUS_x<-ifelse(self.reply,(posts_x$course.post==1),(posts_x$course.post==1)&(posts_x$self.reply==0))
-  FOCup_x<-(upvotes_x$course.post==1)
-  
-  users_x[,paste0(c("reply","comment","upvote"),"_count")]<-NA
-  for (x in 1:nrow(users_x)){
-    users_x[x,"reply_count"]<-sum(FOCUS_x&(posts_x$user_id==users_x[x,"user_id"])&(posts_x$level==2))
-    users_x[x,"comment_count"]<-sum(FOCUS_x&(posts_x$user_id==users_x[x,"user_id"])&(posts_x$level==3))
-    users_x[x,"upvote_count"]<-sum(FOCup_x&(upvotes_x$upvote_username==users_x[x,"username"]),na.rm=T)
-  }
-  users_x$activities<-rowSums(users_x[,paste0(c("reply","comment","upvote"),"_count")])
   ###############################################################################################
   return(list(users=users_x,
               posts=posts_x,

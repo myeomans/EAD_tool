@@ -19,7 +19,7 @@ table_row_build<-function(data){
 }
 ############################################################
 ############################################################
-demoTable <- function(user.data=NULL,enrol.data=NULL, pc.data=NULL, settings){
+demoTable <- function(user.data=NULL,enrol.data=NULL, pc.data=NULL, post.data=NULL, settings){
   if(is.null(user.data)){ 
     return(NULL)
   } else {
@@ -29,17 +29,25 @@ demoTable <- function(user.data=NULL,enrol.data=NULL, pc.data=NULL, settings){
       table_build[["Enrolled in Course"]]<-table_row_build(enrol.enter)
     }
     user.data$included<-1*(!is.na(user.data[,settings$of.interest]))
-    table_build[["Answered WVS"]]<-table_row_build(user.data[(user.data$included==1),])
+    table_build[["Answered DOI"]]<-table_row_build(user.data[(user.data$included==1),])
     if(settings$usa.only){
       user.data$included<-1*(!is.na(user.data[,settings$of.interest]))&(user.data$USA==1)
       table_build[["From USA"]]<-table_row_build(user.data[(user.data$included==1),])
     }
-    table_build[["Active In Forum"]]<-table_row_build(user.data[(user.data$included==1)&(user.data$activities>0),])
+    if (!is.null(post.data)){
+      if(settings$course.only){
+        post.data<-post.data[post.data$course.post==1,]
+        #upvote.data<-upvote.data[upvote.data$course.post==1,]
+      }
+      user.data$activities<-unlist(sapply(1:nrow(user.data),function(x) sum((post.data$user_id==user.data[x,"user_id"]))))
+
+      table_build[["Active In Forum"]]<-table_row_build(user.data[(user.data$included==1)&(user.data$activities>0),])
+    }
     output<-do.call(cbind, table_build)
     
     return(htmlTable(output,
                      header = paste0("&nbsp;&nbsp;&nbsp;",names(table_build),"&nbsp;&nbsp;&nbsp;"), 
-                     n.tspanner = c(1, 5 ,2), 
+                     n.tspanner = c(1,5,2), 
                      rnames = names(table_build[[1]]),
                      tspanner = c("","","")
     ))}

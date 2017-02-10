@@ -3,7 +3,7 @@
 #    concept: Brandon
 #    code: Alejandro Kantor
 
-plotHeatMap <- function(dt_post, s_user_ideology = "parent_leftright", s_respond_ideology = "leftright"){
+plotHeatMap <- function(dt_post, settings, s_user_ideology = "parent_leftright", s_respond_ideology = "leftright"){
   dt_post <- data.table(dt_post)
   #-----
   #dt_post <- dt_post[responded_to!=username ]
