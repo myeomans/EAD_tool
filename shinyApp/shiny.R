@@ -46,47 +46,54 @@ ui <- dashboardPage(
 )
 ##########################################################################
 server <- function(input, output) {
+  # Get data sets
+  getSurvey <- reactive({dfFromCsv(input, "survey")})
+  getPosts <- reactive({dfFromCsv(input, "posts")})
+  getUpvotes <- reactive({dfFromCsv(input, "upvotes")})
+  getEnrol <- reactive({dfFromCsv(input, "enrol")})
+  getPersoncourse <- reactive({dfFromCsv(input, "personcourse")})
+  
+  
   output$upvotes_plot <-shiny::renderPlot({
-    makeUpvoteFacetGraph(dfFromCsv(input, "survey"),
-                         dfFromCsv(input, "upvotes"),
-                         input)
+    makeUpvoteFacetGraph(getSurvey(), getUpvotes(), input)
   })
   
   output$posts_plot <-shiny::renderPlot({
-    makeCommentFacetGraph(dfFromCsv(input, "survey"),
-                          dfFromCsv(input, "posts"),
+    makeCommentFacetGraph(getSurvey(),
+                          getPosts(),
                           input)
   })
   
   output$activity_plot <-shiny::renderPlot({
-    makeActivityIdeologyGraph(dfFromCsv(input, "survey"),
-                              dfFromCsv(input, "posts"),
-                              dfFromCsv(input, "upvotes"),
+    makeActivityIdeologyGraph(getSurvey(),
+                              getPosts(),
+                              getUpvotes(),
                               input)
   })
   
   output$distribution_plot <-shiny::renderPlot({
-    makeIdeologyGraph(dfFromCsv(input, "survey"),
-                      dfFromCsv(input, "posts"),
+    makeIdeologyGraph(getSurvey(),
+                      getPosts(),
                       input)
   })
   
   output$descriptive_table <-shiny::renderText({
-    demoTable(dfFromCsv(input, "survey"),
-              dfFromCsv(input, "enrol"),
-              dfFromCsv(input, "personcourse"), 
-              dfFromCsv(input, "posts"),
+    demoTable(getSurvey(),
+              getEnrol(),
+              getPersoncourse(),
+              getPosts(),
               input)
   })
   
   # Needs to be lower-dimensional... e.g. Tripartite
   output$heat_plot <-shiny::renderPlot({
-    plotHeatMap(dfFromCsv(input, "posts"),input)
+    plotHeatMap(getPosts(),input)
   })
   
+  
   output$expected_actual_plot<-shiny::renderPlot({
-    plotExpectedVsActualPosts(dfFromCsv(input, "survey"),
-                              dfFromCsv(input, "posts"), 
+    plotExpectedVsActualPosts(getSurvey(),
+                              getPosts(),
                               input)
   })
 }
