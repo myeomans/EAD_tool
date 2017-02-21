@@ -6,30 +6,27 @@
 
 makeActivityIdeologyGraph <- function(user.data, post.data, upvote.data, settings){
   user.data<-user.data[!is.na(user.data[,settings$of.interest]),]
-  if(settings$usa.only){user.data<-user.data[user.data$USA==1,]}
-  if(settings$course.only){
-    post.data<-post.data[post.data$course.post==1,]
-    upvote.data<-upvote.data[upvote.data$course.post==1,]
-  }
-  if(!settings$self.posts){
-    post.data<-post.data[post.data$self.reply==0,]
-  }
+  # if(settings$usa.only){user.data<-user.data[user.data$USA==1,]}
+  # if(settings$course.only){
+  #   post.data<-post.data[post.data$course.post==1,]
+  #   upvote.data<-upvote.data[upvote.data$course.post==1,]
+  # }
+  # if(!settings$self.posts){
+  #   post.data<-post.data[post.data$self.reply==0,]
+  # }
   
-  count_col_names <-  c(#"reply_count", "comment_count","upvote_count",
-    settings$of.interest,"user_id","username")
-  df_plot <- user.data[ ,count_col_names]
+  df_plot <- user.data[ ,c("user_id",settings$of.interest)]
   df_plot$Replies<-unlist(sapply(1:nrow(df_plot),function(x) sum((post.data$user_id==df_plot[x,"user_id"])&(post.data$level==2))))
-  df_plot$Comments<-unlist(sapply(1:nrow(df_plot),function(x) sum((post.data$user_id==df_plot[x,"user_id"])&(post.data$level==3))))
-  df_plot$Upvotes<-unlist(sapply(1:nrow(df_plot),function(x) sum((upvote.data$upvote_username==df_plot[x,"username"]),na.rm=T)))
+  df_plot$Comments<-unlist(sapply(1:nrow(df_plot),function(x) sum((post.data$user_id==df_plot[x,"user_id"])&(post.data$level>2))))
+  df_plot$Upvotes<-unlist(sapply(1:nrow(df_plot),function(x) sum((upvote.data$user_id==df_plot[x,"user_id"]),na.rm=T)))
   df_plot$correlative <- 1:nrow(df_plot)
-  df_plot[,c("user_id","username")]<-NULL
+  df_plot[,c("user_id")]<-NULL
   df_plot <- melt(df_plot, id.vars = c("correlative",settings$of.interest))
   
   g_plot <- ggplot(df_plot, aes_string(x=settings$of.interest, y="value", group=settings$of.interest)) +
     facet_wrap(~ variable, ncol = 1 ,scales = "free") +
-    theme( # remove the vertical grid lines
+    theme( # remove the vertical grid lines, keep horizontal
       panel.grid.major.x = element_blank() ,
-      # explicitly set the horizontal lines (or they will disappear too)
       panel.grid.major.y = element_line( size=.1, color="black" )
     )
   if(length(unique(df_plot[,settings$of.interest])) <= 5 ){

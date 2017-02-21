@@ -12,34 +12,33 @@
 
 makeCommentFacetGraph <- function(user.data, post.data, settings){  
   ##################################################################
-  exclusions<-(post.data$TriPart!="")&(post.data$parent_TriPart!="")&(post.data$level==3)
-  exclusions<-exclusions&(!is.na(post.data$TriPart))&(!is.na(post.data$parent_TriPart))
-  if(settings$course.only) exclusions<-exclusions&(post.data$course.post==1)
-  if(!settings$self.posts)  exclusions<-exclusions&(post.data$self.reply==0)
-  if(settings$usa.only){   
+  # Merge in relevant dimension
+  TOP<-paste0("parent_",settings$of.interest)
+  BOT<-settings$of.interest
+  parent.user.data<-user.data
+  parent.user.data[,paste0("parent_",c("user_id",BOT))]<-parent.user.data[,c("user_id",BOT)]
+  post.data<-merge(post.data,user.data[,c("user_id",BOT)],by="user_id",all.x=T)
+  post.data<-merge(post.data,parent.user.data[,c("parent_user_id",TOP)],by="parent_user_id",all.x=T)
+  post.data$top<-post.data[,TOP]
+  post.data$bot<-post.data[,BOT]
+  ##################################################################
+  # Filter posts
+  exclusions<-(post.data$bot!="")&(post.data$top!="")&(post.data$level>2)
+  exclusions<-exclusions&(!is.na(post.data$bot))&(!is.na(post.data$top))
+  # if(settings$course.only) exclusions<-exclusions&(post.data$course.post==1)
+  # if(!settings$self.posts)  exclusions<-exclusions&(post.data$self.reply==0)
+  if(settings$usa.only){
     exclusions<-exclusions&(post.data$user_id%in%user.data[user.data$USA==1,"user_id"])
-    exclusions<-exclusions&(post.data$parent_name%in%user.data[user.data$USA==1,"username"])
+    exclusions<-exclusions&(post.data$parent_user_id%in%user.data[user.data$USA==1,"user_id"])
   }
   #if(settings$short.yes)   exclusions<-exclusions&(post.data$shortyes==0)
 
-  #table(post.data$TriPart,post.data$parent_TriPart,useNA="ifany")
-  post.data$TriPart<-factor(post.data$TriPart,levels=c("Liberal","Moderate","Conservative"))
-  post.data$parent_TriPart<-factor(post.data$parent_TriPart,levels=c("Liberal","Moderate","Conservative"))
   post.data<-post.data[exclusions,]
-  
-  # post.data<-merge(post.data,user.data[,c("user_id",settings$of.interest)],by="user_id", all.x=T)
-  # posts_x[,c("toppost_leftright","parent_leftright")]<-NA
-  # for (x in 1:nrow(posts_x)){
-  #   try(posts_x[x,]$toppost_leftright<-posts_x[posts_x$mongoid==posts_x[x,"comment_thread_id"],]$leftright,silent=T)
-  #   if(posts_x[x,]$level==3){
-  #     try(posts_x[x,]$parent_leftright<-posts_x[posts_x$mongoid==posts_x[x,"parent_ids"],]$leftright,silent=T)
-  #   }
-  # }
   ##################################################################
-  plot.top <- max(table(post.data$TriPart,post.data$parent_TriPart))
+  plot.top <- max(table(post.data$bot,post.data$top))
   
-  g_plot <- qplot(TriPart, data=post.data, geom="bar", fill=TriPart) +
-    facet_wrap(~ parent_TriPart, strip.position = "bottom") + 
+  g_plot <- qplot(bot, data=post.data, geom="bar", fill=bot) +
+    facet_wrap(~ top, strip.position = "bottom") + 
     ylim(0,plot.top) + scale_fill_brewer( palette = "Set1")+
     labs(x="Original Poster Ideology",y="Post-Comment Pairs", fill = "Commenter Ideology") +
     scale_x_discrete(breaks=NULL) +

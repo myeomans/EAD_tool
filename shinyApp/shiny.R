@@ -51,7 +51,6 @@ server <- function(input, output) {
   getPosts <- reactive({dfFromCsv(input, "posts")})
   getUpvotes <- reactive({dfFromCsv(input, "upvotes")})
   getEnrol <- reactive({dfFromCsv(input, "enrol")})
-  getPersoncourse <- reactive({dfFromCsv(input, "personcourse")})
   
   
   output$upvotes_plot <-shiny::renderPlot({
@@ -80,12 +79,10 @@ server <- function(input, output) {
   output$descriptive_table <-shiny::renderText({
     demoTable(getSurvey(),
               getEnrol(),
-              getPersoncourse(),
               getPosts(),
               input)
   })
-  
-  # Needs to be lower-dimensional... e.g. Tripartite
+
   output$heat_plot <-shiny::renderPlot({
     plotHeatMap(getPosts(),input)
   })

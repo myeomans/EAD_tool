@@ -5,46 +5,45 @@
 
 ##################################################################
 
-makeUpvoteFacetGraph <- function(user.data, plot.data, settings){  
-  
-  plot.data$TriPart<-plot.data$upvote_TriPart
-  plot.data$parent_TriPart<-plot.data$poster_TriPart
+makeUpvoteFacetGraph <- function(user.data, upvote.data, settings){  
   ##################################################################
-  exclusions<-(plot.data$TriPart!="")&(plot.data$parent_TriPart!="")&(!is.na(plot.data$TriPart))&(!is.na(plot.data$parent_TriPart))
-  if(settings$course.only) exclusions<-exclusions&(plot.data$course.post==1)
-  #if(!settings$self.posts)  exclusions<-exclusions&(plot.data$self.reply==0) # does this apply to up-votes?
-  #if(settings$short.yes)   exclusions<-exclusions&(plot.data$shortyes==0)
-    #table(plot.data$TriPart,plot.data$parent_TriPart,useNA="ifany")
+  # Merge in relevant dimension
+  TOP<-paste0("parent_",settings$of.interest)
+  BOT<-settings$of.interest
+  parent.user.data<-user.data
+  parent.user.data[,paste0("parent_",c("user_id",BOT))]<-parent.user.data[,c("user_id",BOT)]
+  upvote.data<-merge(upvote.data,user.data[,c("user_id",BOT)],by="user_id",all.x=T)
+  upvote.data<-merge(upvote.data,parent.user.data[,paste0("parent_",c("user_id",BOT))],by="parent_user_id",all.x=T)
+  upvote.data$top<-upvote.data[,TOP]
+  upvote.data$bot<-upvote.data[,BOT]
+  
+  ##################################################################
+  exclusions<-(upvote.data$bot!="")&(upvote.data$top!="")
+  exclusions<-exclusions&(!is.na(upvote.data$bot))&(!is.na(upvote.data$top))
+  
+  # upvotes_x$course.post<-1*(upvotes_x$thread_id%in%posts_x[(posts_x$course.post==1)&(posts_x$level==1),"thread_id"])
+  #if(settings$course.only) exclusions<-exclusions&(upvote.data$course.post==1)
+  #if(!settings$self.posts)  exclusions<-exclusions&(upvote.data$self.reply==0) # does this apply to up-votes?
+  #if(settings$short.yes)   exclusions<-exclusions&(upvote.data$shortyes==0)
   if(settings$usa.only){   
-    exclusions<-exclusions&(plot.data$upvote_username%in%user.data[user.data$USA==1,"username"])
-    exclusions<-exclusions&(plot.data$poster_username%in%user.data[user.data$USA==1,"username"])
+    exclusions<-exclusions&(upvote.data$user_id%in%user.data[user.data$USA==1,"user_id"])
+    exclusions<-exclusions&(upvote.data$parent_user_id%in%user.data[user.data$USA==1,"user_id"])
   }
   
-  plot.data$TriPart<-factor(plot.data$TriPart,levels=c("Liberal","Moderate","Conservative"))
-  plot.data$parent_TriPart<-factor(plot.data$parent_TriPart,levels=c("Liberal","Moderate","Conservative"))
-  plot.data<-plot.data[exclusions,]
-  
-  #   MOVE FROM INTAKE
-  # #upvotes_x<-merge(upvotes_x,posts_x[,c("mongoid","thread_id","username")],by="mongoid", all.x=T)
-  # #names(upvotes_x)[names(upvotes_x)=="username"]<-"poster_username"
-  # upvotes_x[,c("poster_username","thread_id","poster_leftright","upvote_leftright")]<-NA
-  # for (uv in 1:nrow(upvotes_x)){
-  #   try(upvotes_x[uv,]$thread_id<-posts_x[posts_x$mongoid==upvotes_x[uv,]$mongoid,"thread_id"],silent=T)
-  #   try(upvotes_x[uv,]$poster_username<-posts_x[posts_x$mongoid==upvotes_x[uv,]$mongoid,"username"], silent=T)
-  #   try(upvotes_x[uv,]$poster_leftright<-as.numeric(unlist(users_x[users_x$username==upvotes_x[uv,]$poster_username,"leftright"]),silent=T))
-  #   try(upvotes_x[uv,]$upvote_leftright<-as.numeric(unlist(users_x[users_x$username==upvotes_x[uv,]$upvote_username,"leftright"]),silent=T))
-  # }
-  # upvotes_x$course.post<-1*(upvotes_x$thread_id%in%posts_x[(posts_x$course.post==1)&(posts_x$level==1),"thread_id"])
+  upvote.data<-upvote.data[exclusions,]
   
   ##################################################################
-  plot.top <- max(table(plot.data$TriPart,plot.data$parent_TriPart))
+  plot.top <- max(table(upvote.data$top,upvote.data$bot))
   
-  g_upvote_graph <- qplot(TriPart, data=plot.data, geom="bar", fill=TriPart) +
-    facet_wrap(~ parent_TriPart, strip.position = "bottom") + 
+  #xxx<-plot(table(upvote.data$top))
+  #return(xxx)
+  
+  g_upvote_graph <- qplot(bot, data=upvote.data, geom="bar", fill=bot) +
+    facet_wrap(~ top, strip.position = "bottom") +
     ylim(0,plot.top) +scale_fill_brewer( palette = "Set1")+
     labs(x="Original Poster Ideology",y="Upvote-Post Pairs", fill = "Upvoter Ideology") +
     scale_x_discrete(breaks=NULL) +
-    #scale_fill_discrete(name="Upvoter Ideology") + 
-    getTheme() 
+    #scale_fill_discrete(name="Upvoter Ideology") +
+    getTheme()
   return(g_upvote_graph)
 }

@@ -4,8 +4,13 @@
 course.folder<-"/DATA/spencer/hks101mike/"
 posts_ag<-read.csv(paste0(course.folder,"forum.csv"),stringsAsFactors=F)
 forum_ag <- read.csv(paste0(course.folder,"HKSforumevents.csv"),stringsAsFactors = F) # for upvotes
-enrol_ag<-read.csv(paste0(course.folder,"users.csv"),stringsAsFactors = F)
-users_ag<-read.csv(paste0(course.folder,"precourse.csv"),stringsAsFactors = F)
+enrol.data<-read.csv(paste0(course.folder,"users.csv"),stringsAsFactors = F)
+users.data<-read.csv(paste0(course.folder,"precourse.csv"),stringsAsFactors = F)
+
+
+enrol.enter<-merge(enrol.data,pc.data[,c("user_id","viewed")],by="user_id", all.x=T)
+enrol.enter<-enrol.enter[(enrol.enter$viewed=="True"),]
+
 
 DC<-data.checker(posts_x=posts_ag,
                  forum_x=forum_ag,
