@@ -82,9 +82,11 @@ server <- function(input, output) {
               getPosts(),
               input)
   })
-
+  
   output$heat_plot <-shiny::renderPlot({
-    plotHeatMap(getPosts(),input)
+    plotHeatMap(getSurvey(),
+                getPosts(),
+                input)
   })
   
   
