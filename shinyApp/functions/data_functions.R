@@ -23,5 +23,13 @@ dfFromCsv <- function(input, s_file_name){
     return(df_data)
   }
 }
+correctTriPartLevels <- function(df_data){
+  if(is.null(df_data)){
+    return(NULL)
+  }
+  df_data$TriPart <- factor(df_data$TriPart, levels = c("Liberal", "Moderate","Conservative"))
+  return(df_data)
+}
+
 
 ###############################################################################################
