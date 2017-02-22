@@ -5,6 +5,11 @@
 ##################################################################
 
 makeActivityIdeologyGraph <- function(user.data, post.data, upvote.data, settings){
+  
+  if( is.null(user.data) | is.null(post.data)){
+    return(NULL)
+  }
+  
   user.data<-user.data[!is.na(user.data[,settings$of.interest]),]
   # if(settings$usa.only){user.data<-user.data[user.data$USA==1,]}
   # if(settings$course.only){

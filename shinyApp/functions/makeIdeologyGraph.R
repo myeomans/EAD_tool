@@ -5,6 +5,11 @@
 ##################################################################
 
 makeIdeologyGraph <- function(user.data, post.data, settings){
+  
+  if( is.null(user.data) | is.null(post.data)){
+    return(NULL)
+  }
+  
   user.data<-user.data[!is.na(user.data[,settings$of.interest]),]
   if(settings$usa.only){user.data<-user.data[user.data$USA==1,]}
   if ((!is.null(post.data))&settings$forum.active){
@@ -20,13 +25,12 @@ makeIdeologyGraph <- function(user.data, post.data, settings){
       geom_histogram(stat="count") + 
       xlab(settings$of.interest) + 
       theme(panel.grid.major = element_blank() )
-  }
-  else{
+  } else {
     g_plot <- ggplot(user.data, aes_string(x=settings$of.interest)) +
       geom_histogram(stat="bin", bins=20) + 
       xlab(settings$of.interest) +
       theme(panel.grid.major = element_blank())
-    }
+  }
   
   return(g_plot)
 }

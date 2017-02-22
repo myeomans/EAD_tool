@@ -5,6 +5,9 @@
 
 
 plotExpectedVsActualPosts <- function( dt_user, dt_post, settings){
+  if( is.null(dt_user) | is.null(dt_post)){
+    return(NULL)
+  }
   s_user_ideology<-settings$of.interest
   s_post_ideology<-paste0("parent_",settings$of.interest)
   dt_user <- data.table(dt_user)

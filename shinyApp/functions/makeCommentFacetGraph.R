@@ -11,6 +11,9 @@
 ##################################################################
 
 makeCommentFacetGraph <- function(user.data, post.data, settings){  
+  if( is.null(user.data) | is.null(post.data)){
+    return(NULL)
+  }
   ##################################################################
   # Merge in relevant dimension
   TOP<-paste0("parent_",settings$of.interest)

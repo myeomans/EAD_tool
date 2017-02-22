@@ -4,6 +4,9 @@
 #    code: Alejandro Kantor
 
 plotHeatMap <- function(user.data, post.data, settings){
+  if( is.null(user.data) | is.null(post.data)){
+    return(NULL)
+  }
   TOP<-paste0("parent_",settings$of.interest)
   BOT<-settings$of.interest
   parent.user.data<-user.data
