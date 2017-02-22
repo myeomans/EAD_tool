@@ -49,11 +49,11 @@ ui <- dashboardPage(
 ##########################################################################
 server <- function(input, output) {
   # Get data sets
-  getSurvey <- reactive({dfFromCsv(input, "survey")})
+  getSurveyPre <- reactive({dfFromCsv(input, "survey")})
   getPosts <- reactive({dfFromCsv(input, "posts")})
   getUpvotes <- reactive({dfFromCsv(input, "upvotes")})
   getEnrol <- reactive({dfFromCsv(input, "enrol")})
-  
+  getSurvey <- reactive({correctTriPartLevels( getSurveyPre() ) } )
   
   output$upvotes_plot <-shiny::renderPlot({
     makeUpvoteFacetGraph(getSurvey(), getUpvotes(), input)
