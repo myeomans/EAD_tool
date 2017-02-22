@@ -24,8 +24,16 @@ introTab<-function(){
                 textInput('course.name', 'Forum Name', value="American Government"),
                 dateInput('start.date', 'Forum Launch Date', value="2015-09-01"),
                 textInput('admin.names', 'Admin User Names', value="RachelRueckert1,zacharydavis"),
-                p("Separate with commas (e.g. \"Matthew, Mark, Luke, John\")")
-            )
+                p("Separate with commas (e.g. \"Matthew, Mark, Luke, John\")"),
+                actionButton("settingsHelp", "",icon = icon("question")),
+                bsModal(id = "settingsHelpModal", 
+                        "Help", 
+                        trigger = "settingsHelp", 
+                        size = "small",
+                        p("Text about settings")
+                )
+            ),
+              tags$style(type='text/css', "#settingsHelp {position:absolute;right:0;bottom:0;}")
           )
   )
 }
