@@ -12,6 +12,8 @@ library(ggplot2)
 library(reshape2)
 library(htmlTable)
 library(data.table)
+library(shinyBS)
+
 options(shiny.maxRequestSize=30*1024^2) 
 ##########################################################################
 loadOrSourceFiles <- function(path, pattern = NULL,ignore.case = FALSE, load = TRUE ){
