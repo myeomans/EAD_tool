@@ -54,7 +54,9 @@ server <- function(input, output) {
   getUpvotes <- reactive({dfFromCsv(input, "upvotes")})
   getEnrol <- reactive({dfFromCsv(input, "enrol")})
   getSurvey <- reactive({correctTriPartLevels( getSurveyPre() ) } )
-  
+  getSurvey <- reactive({
+    makeSurveyData(getSurveyPre() , getPosts(), getUpvotes())
+  })
   output$upvotes_plot <-shiny::renderPlot({
     makeUpvoteFacetGraph(getSurvey(), getUpvotes(), input)
   })
@@ -67,14 +69,11 @@ server <- function(input, output) {
   
   output$activity_plot <-shiny::renderPlot({
     makeActivityIdeologyGraph(getSurvey(),
-                              getPosts(),
-                              getUpvotes(),
                               input)
   })
   
   output$distribution_plot <-shiny::renderPlot({
     makeIdeologyGraph(getSurvey(),
-                      getPosts(),
                       input)
   })
   

@@ -4,19 +4,21 @@
 # Modified by: Alejandro Kantor
 ##################################################################
 
-makeIdeologyGraph <- function(user.data, post.data, settings){
+makeIdeologyGraph <- function(user.data, settings){
   
-  if( is.null(user.data) | is.null(post.data)){
+  if( is.null(user.data) ){
     return(NULL)
   }
   
-  user.data<-user.data[!is.na(user.data[,settings$of.interest]),]
-  if(settings$usa.only){user.data<-user.data[user.data$USA==1,]}
-  if ((!is.null(post.data))&settings$forum.active){
+  user.data <- user.data[!is.na(user.data[,settings$of.interest]),]
+  if(settings$usa.only == TRUE){
+    user.data<-user.data[user.data$USA==1,]
+  }
+  if( (!is.null(user.data$count_post)) & settings$forum.active == TRUE ){
     # if(settings$course.only){
     #   post.data<-post.data[post.data$course.post==1,]
     # }
-    user.data<-user.data[unlist(sapply(1:nrow(user.data),function(x) sum((post.data$user_id==user.data[x,"user_id"]))))>0,]
+    user.data <- user.data[which(user.data$count_post > 0),]
   }
   if(length(unique(user.data[,settings$of.interest]))<12){
     
