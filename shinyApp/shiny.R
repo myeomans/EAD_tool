@@ -50,21 +50,28 @@ ui <- dashboardPage(
 server <- function(input, output) {
   # Get data sets
   getSurveyPre <- reactive({dfFromCsv(input, "survey")})
-  getPosts <- reactive({dfFromCsv(input, "posts")})
-  getUpvotes <- reactive({dfFromCsv(input, "upvotes")})
+  getPostsPre <- reactive({dfFromCsv(input, "posts")})
+  getUpvotesPre <- reactive({dfFromCsv(input, "upvotes")})
   getEnrol <- reactive({dfFromCsv(input, "enrol")})
-  getSurvey <- reactive({correctTriPartLevels( getSurveyPre() ) } )
+  
   getSurvey <- reactive({
-    makeSurveyData(getSurveyPre() , getPosts(), getUpvotes())
+    makeSurveyData(getSurveyPre() , getPostsPre(), getUpvotes())
   })
+  
+  getPosts <- reactive({
+    makePostData(getPostsPre() , getSurveyPre())
+  })
+  getUpvotes <- reactive({
+    makeUpvoteData(getUpvotesPre() , getSurveyPre())
+  })
+  
   output$upvotes_plot <-shiny::renderPlot({
-    makeUpvoteFacetGraph(getSurvey(), getUpvotes(), input)
+    makeCommentUpvoteFacetGraph(getUpvotes(), input,s_data_origin = "upvote")
   })
   
   output$posts_plot <-shiny::renderPlot({
-    makeCommentFacetGraph(getSurvey(),
-                          getPosts(),
-                          input)
+    makeCommentUpvoteFacetGraph(getPosts(),
+                          input, s_data_origin = "post")
   })
   
   output$activity_plot <-shiny::renderPlot({
@@ -85,8 +92,7 @@ server <- function(input, output) {
   })
   
   output$heat_plot <-shiny::renderPlot({
-    plotHeatMap(getSurvey(),
-                getPosts(),
+    plotHeatMap(getPosts(),
                 input)
   })
   
