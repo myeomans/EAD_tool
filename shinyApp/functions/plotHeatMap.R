@@ -2,27 +2,30 @@
 # Author: 
 #    concept: Brandon
 #    code: Alejandro Kantor
-
-plotHeatMap <- function(user.data, post.data, settings){
-  if( is.null(user.data) | is.null(post.data)){
+plotHeatMap <- function(post.data, settings){
+  if( is.null(post.data)){
     return(NULL)
   }
-  TOP<-paste0("parent_",settings$of.interest)
-  BOT<-settings$of.interest
-  parent.user.data<-user.data
-  parent.user.data[,paste0("parent_",c("user_id",BOT))]<-parent.user.data[,c("user_id",BOT)]
-  post.data<-merge(post.data,user.data[,c("user_id",BOT)],by="user_id",all.x=T)
-  post.data<-merge(post.data,parent.user.data[,c("parent_user_id",TOP)],by="parent_user_id",all.x=T)
+  s_of_interest <- settings$of.interest
+  s_of_interest_parent <- paste0("parent_",s_of_interest)
+  
   
   post.data <- data.table(post.data)
   
   #-----
   #post.data <- post.data[responded_to!=username ]
   #-----
-  v_s_cols <-  c(TOP, BOT)
+  v_s_cols <-  c(s_of_interest_parent, s_of_interest)
   dt_freq <- post.data[ , .(freq = .N), keyby = v_s_cols]
-  v_levels <- unique( c( post.data[[TOP ]] , 
-                         post.data[[BOT ]]))
+  
+  if( is.factor(post.data[[s_of_interest_parent ]])){
+    v_levels <- unique( c( as.character(post.data[[s_of_interest_parent ]]) , 
+                           as.character(post.data[[s_of_interest ]])))
+  } else {
+    v_levels <- unique( c( post.data[[s_of_interest_parent ]] , 
+                           post.data[[s_of_interest ]]))
+  }
+
   v_levels <- v_levels[! is.na(v_levels)]
   dt_comb <- CJ(v_levels, v_levels)
   
@@ -38,19 +41,23 @@ plotHeatMap <- function(user.data, post.data, settings){
   
   dt_freq[ , difference := freq - expected  ]
   
-  dt_freq <- round(dt_freq)
-  
-  dt_freq[ , respond_ideology := factor(respond_ideology, levels=10:1)]
+  dt_freq[ , expected := round(expected)] 
+  if( !is.factor(dt_freq[ , user_ideology])){
+    dt_freq[ , user_ideology := factor(user_ideology, v_levels)] 
+    dt_freq[ , respond_ideology := factor(respond_ideology, levels=rev(v_levels))]
+  } else {
+    dt_freq[ , respond_ideology := factor(respond_ideology, levels=rev(levels(respond_ideology)))]
+  }
   
   # original code incorrectly set x as response ideology but xlab as user ideology
-  gg_out <- ggplot(dt_freq, aes(x = as.factor(user_ideology), as.factor(respond_ideology), fill = difference,   group=user_ideology)) +
+  gg_out <- ggplot(dt_freq, aes(x =user_ideology, y = respond_ideology, fill = difference,   group=user_ideology)) +
     geom_tile() + 
     geom_text(aes( label = round(difference, 1))) +
     theme_bw() + 
     ylab("Response Poster Ideology") + xlab("Comment Reply Ideology") +
     scale_fill_distiller(palette = "Spectral")
     #scale_fill_gradient(low = "blue", high = "red") + 
-    ggtitle("Observed - Expected Replies by Ideology")
+    #ggtitle("Observed - Expected Replies by Ideology")
   
   return(gg_out)
 }
