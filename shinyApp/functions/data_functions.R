@@ -35,7 +35,7 @@ makeCounts <- function(df_data, s_col_to_count, s_count_name){
   return(df_count)
 }
 
-makeSurveyData <- function(df_survey = NULL, df_post = NULL, df_upvote=NULL){
+makeSurveyData <- function(df_survey = NULL, df_post = NULL, df_upvote=NULL, settings = NULL){
   if(is.null(df_survey)){
     return(NULL)
   }
@@ -67,4 +67,35 @@ makeSurveyData <- function(df_survey = NULL, df_post = NULL, df_upvote=NULL){
 }
 
 
+makePostData <- function(df_post=NULL, df_survey=NULL,settings = NULL){
+  if(is.null(df_post) | is.null(df_survey)){
+    return(NULL)
+  }
+  
+  if(!is.null(df_survey)){
+    df_survey_parent <- df_survey
+    names(df_survey_parent) <- paste0("parent_", names(df_survey))
+    
+    df_post <- merge(df_post, df_survey, by = "user_id", all.x = TRUE)
+    df_post <- merge(df_post, df_survey_parent, by = "parent_user_id", all.x = TRUE)
+  }
+  
+  return(df_post)
+}
+
+makeUpvoteData <- function(df_upvote=NULL, df_survey=NULL, settings = NULL){
+  if(is.null(df_upvote) | is.null(df_survey)){
+    return(NULL)
+  }
+  
+  if(!is.null(df_survey)){
+    df_survey_parent <- df_survey
+    names(df_survey_parent) <- paste0("parent_", names(df_survey))
+    
+    df_upvote <- merge(df_upvote, df_survey, by = "user_id", all.x = TRUE)
+    df_upvote <- merge(df_upvote, df_survey_parent, by = "parent_user_id", all.x = TRUE)
+  }
+  
+  return(df_upvote)
+}
 ###############################################################################################
