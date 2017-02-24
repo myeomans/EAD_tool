@@ -19,7 +19,7 @@ table_row_build<-function(data){
 }
 ############################################################
 ############################################################
-demoTable <- function(user.data=NULL,enrol.data=NULL, post.data=NULL, settings){
+demoTable <- function(user.data=NULL,enrol.data=NULL, settings){
   if(is.null(user.data)){ 
     return(NULL)
   } else {
@@ -33,7 +33,7 @@ demoTable <- function(user.data=NULL,enrol.data=NULL, post.data=NULL, settings){
       user.data$included<-1*(!is.na(user.data[,settings$of.interest]))&(user.data$USA==1)
       table_build[["From USA"]]<-table_row_build(user.data[(user.data$included==1),])
     }
-    if (!is.null(post.data)){
+    if (!is.null(user.data$count_post)){
       if(settings$course.only){
         #post.data<-post.data[post.data$course.post==1,]
         #upvote.data<-upvote.data[upvote.data$course.post==1,]

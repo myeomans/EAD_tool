@@ -87,7 +87,6 @@ server <- function(input, output) {
   output$descriptive_table <-shiny::renderText({
     demoTable(getSurvey(),
               getEnrol(),
-              getPosts(),
               input)
   })
   
