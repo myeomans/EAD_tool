@@ -38,7 +38,8 @@ demoTable <- function(user.data=NULL,enrol.data=NULL, post.data=NULL, settings){
         #post.data<-post.data[post.data$course.post==1,]
         #upvote.data<-upvote.data[upvote.data$course.post==1,]
       }
-      user.data$activities<-unlist(sapply(1:nrow(user.data),function(x) sum((post.data$user_id==user.data[x,"user_id"]))))
+
+      user.data$activities <- user.data$count_post
 
       table_build[["Active in Forum"]]<-table_row_build(user.data[(user.data$included==1)&(user.data$activities>0),])
     }
