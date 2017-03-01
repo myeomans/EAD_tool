@@ -11,7 +11,7 @@
 ##################################################################
 
 
-makeCommentUpvoteFacetGraph <- function( data, settings, s_data_origin){  
+makeFacetGraph <- function( data, s_data_origin, settings){  
   if( is.null(data)){
     return(NULL)
   }

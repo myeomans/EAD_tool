@@ -55,23 +55,22 @@ server <- function(input, output) {
   getEnrol <- reactive({dfFromCsv(input, "enrol")})
   
   getSurvey <- reactive({
-    makeSurveyData(getSurveyPre() , getPostsPre(), getUpvotes())
+    makeSurveyData(getSurveyPre() , getPostsPre(), getUpvotes(), input)
   })
   
   getPosts <- reactive({
-    makePostData(getPostsPre() , getSurveyPre())
+    makePostData(getPostsPre() , getSurveyPre(), input)
   })
   getUpvotes <- reactive({
-    makeUpvoteData(getUpvotesPre() , getSurveyPre())
+    makeUpvoteData(getUpvotesPre() , getSurveyPre(), getPosts, input)
   })
   
   output$upvotes_plot <-shiny::renderPlot({
-    makeCommentUpvoteFacetGraph(getUpvotes(), input,s_data_origin = "upvote")
+    makeFacetGraph(getUpvotes(), s_data_origin = "upvote", input)
   })
   
   output$posts_plot <-shiny::renderPlot({
-    makeCommentUpvoteFacetGraph(getPosts(),
-                          input, s_data_origin = "post")
+    makeFacetGraph(getPosts(), s_data_origin = "post", input)
   })
   
   output$activity_plot <-shiny::renderPlot({

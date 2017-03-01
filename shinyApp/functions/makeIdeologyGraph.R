@@ -11,9 +11,7 @@ makeIdeologyGraph <- function(user.data, settings){
   }
   
   user.data <- user.data[!is.na(user.data[,settings$of.interest]),]
-  if(settings$usa.only == TRUE){
-    user.data<-user.data[user.data$USA==1,]
-  }
+  if(settings$usa.only){user.data<-user.data[user.data$USA==1,]}
   if( (!is.null(user.data$count_post)) & settings$forum.active == TRUE ){
     # if(settings$course.only){
     #   post.data<-post.data[post.data$course.post==1,]

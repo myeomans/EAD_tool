@@ -3,7 +3,7 @@ forumTab <- function(){
           h2("Forum Activity"),
           fluidRow(
             box(
-              height = "600px",
+              height = "700px",
               tabPanel("Activity in Threads", plotOutput("activity_plot" , height = 600),
                        actionButton("activityHelp", "",icon = icon("question")),
                        bsModal(id = "activityHelpModal", 
