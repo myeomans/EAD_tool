@@ -19,37 +19,22 @@ userTab <- function(){
             ),
           fluidRow(
             box(
-              width = 8,
-              height = "350px",
-              tabPanel("Distribution of Interest", plotOutput("distribution_plot", height = 250)),
-              checkboxInput('forum.active', 'Forum Participants Only', value=FALSE),
-              actionButton("distPlotHelp", "",icon = icon("question")),
-              bsModal(id = "distPlotHelpModal", 
-                      "Help", 
-                      trigger = "distPlotHelp", 
-                      size = "small",
-                      p("Text about distribution plot")
-              )
-            ),
-            box(
-              width = 4,
-              h3("Sample Options"),
+              width = 10,
+              height = "400px",
               selectInput("of.interest", "Difference of Interest", 
                           list(TriPartite="TriPart",
                                WVS_survey="wvs_ideology",
                                gender="gender",
                                age="age"), 
                           selected = "leftright"),
-              checkboxInput('usa.only', 'American Students Only', value=TRUE),
-              checkboxInput('course.only', 'Exclude Student-Created Threads', value=TRUE),
-              checkboxInput('self.posts', 'Include Comments to Own Posts', value=FALSE),
-              #checkboxInput('short.yes', 'Exclude \"Short Yes\" Posts', value=TRUE)
-              actionButton("ofInterestHelp", "",icon = icon("question")),
-              bsModal(id = "ofInterestHelpModal", 
+              checkboxInput('forum.active', 'Forum Participants Only', value=FALSE),
+              tabPanel("Distribution of Interest", plotOutput("distribution_plot", height = 250)),
+              actionButton("distPlotHelp", "",icon = icon("question")),
+              bsModal(id = "distPlotHelpModal", 
                       "Help", 
-                      trigger = "ofInterestHelp", 
+                      trigger = "distPlotHelp", 
                       size = "small",
-                      p("Text about selection options")
+                      p("Text about distribution plot")
               )
             ),
             tags$style(type='text/css', "#distPlotHelp {position:absolute;right:0;bottom:0;}"),
