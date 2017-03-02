@@ -25,11 +25,17 @@ makeFacetGraph <- function( data, s_data_origin, settings){
   data$top <- data[[s_of_interest_parent]]
   
   if(!is.factor(data$bot)){
-    if(length(levels(as.factor(data$bot)))>5){
+    if(length(levels(as.factor(data$bot)))>7){
       
+      
+      data$bot<-cut(data$bot, breaks=quantile(data$bot, probs=seq(0,1, by=0.25), na.rm=TRUE), 
+                    include.lowest=TRUE, ordered_result=T,dig.lab = 2)
+      data$top<-cut(data$top, breaks=quantile(data$top, probs=seq(0,1, by=0.25), na.rm=TRUE), 
+                    include.lowest=TRUE, ordered_result=T,dig.lab = 2)
+    }else{
+      data$bot <- factor(data$bot)
+      data$top <- factor(data$top)
     }
-    data$bot <- factor(data$bot)
-    data$top <- factor(data$top)
   }
   
   ##################################################################
