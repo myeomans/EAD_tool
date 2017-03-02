@@ -25,7 +25,7 @@ demoTable <- function(user.data=NULL,enrol.data=NULL, settings){
   } else {
     table_build<-list()
     if ((!is.null(enrol.data))){
-      table_build[["Enrolled"]]<-table_row_build(enrol.data)
+      try(table_build[["Enrolled"]]<-table_row_build(enrol.data), silent=T)
     }
     user.data$included<-1*(!is.na(user.data[,settings$of.interest]))
     table_build[["Answered Survey"]]<-table_row_build(user.data[(user.data$included==1),])

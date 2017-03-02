@@ -57,9 +57,10 @@ makeSurveyData <- function(df_survey = NULL, df_post = NULL, df_upvote=NULL, set
   }
   
   # add components from df_upvote
+  
   if(!is.null(df_upvote)){
     df_count_upvotes <- makeCounts(df_upvote,"user_id", "count_upvotes")
-    
+
     df_survey <- merge( df_survey, df_count_upvotes, by = "user_id", all.x=TRUE)
   }
   

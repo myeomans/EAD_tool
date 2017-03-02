@@ -8,7 +8,7 @@
 ##################################################################################
 library(shiny)
 library(shinydashboard)
-library(ggplot2)
+library(ggplot2) 
 library(reshape2)
 library(htmlTable)
 library(data.table)
@@ -62,7 +62,7 @@ server <- function(input, output) {
     makePostData(getPostsPre() , getSurveyPre(), input)
   })
   getUpvotes <- reactive({
-    makeUpvoteData(getUpvotesPre() , getSurveyPre(), getPosts, input)
+    makeUpvoteData(getUpvotesPre() , getSurveyPre(), getPosts(), input)
   })
   
   output$upvotes_plot <-shiny::renderPlot({

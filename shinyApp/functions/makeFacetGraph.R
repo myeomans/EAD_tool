@@ -25,6 +25,9 @@ makeFacetGraph <- function( data, s_data_origin, settings){
   data$top <- data[[s_of_interest_parent]]
   
   if(!is.factor(data$bot)){
+    if(length(levels(as.factor(data$bot)))>5){
+      
+    }
     data$bot <- factor(data$bot)
     data$top <- factor(data$top)
   }

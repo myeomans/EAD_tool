@@ -89,15 +89,14 @@ introTab<-function(){
                   h3("Survey Data"),
                   p("The survey can include a number of covariates, including the focal difference (e.g. ideology),
                     as well as general descriptives of the population. The focal difference must be defined in this dataset
-                    before uploading, even if it is a tranformation of another variable (e.g. ideology on a 10-point scale or binned in thirds).s"),
+                    before uploading, even if it is a tranformation of another variable (e.g. ideology on a 10-point scale or binned in thirds)."),
                   
                   htmlTable(data.frame(cbind(c("user_id","username","gender","certified","bachelors","USA",
                                                "age","teacher","intent","wvs_ideology","TriPart"),
                                              c("unique id for each user","username in forum","gender (0=female, 1=male)",
                                                "completed the class (0/1)", "college degree (0/1)", "From USA (0/1)",
                                                "age (in years)", "Current teacher (0/1)","Intended to complete the class (0/1)",
-                                               "Ideology on 10-point WVS scale", "Ideology binned into terciles",
-                                               "time stamp (YYYY-MM-DD HH:MM:SS)","user id of upvoter"))),
+                                               "Ideology on 10-point WVS scale", "Ideology binned into terciles"))),
                             header = c("name", "description"),
                             css.cell = "padding-left: 2em; padding-right: 2em;",
                             align="l",rnames = FALSE),
