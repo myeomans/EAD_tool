@@ -4,12 +4,6 @@
 # Modified by: Alejandro Kantor
 
 ##################################################################
-# Groupings
-
-#table(posts_gse$TriPart,posts_gse$parent_TriPart)
-#table(posts_hks$TriPart,posts_hks$parent_TriPart)
-##################################################################
-
 
 makeFacetGraph <- function( data, s_data_origin, settings){  
   if( is.null(data)){

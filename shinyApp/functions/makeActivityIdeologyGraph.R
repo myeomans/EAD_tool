@@ -14,17 +14,6 @@ makeActivityIdeologyGraph <- function(user.data,  settings){
   }
   s_col_interest <-  settings$of.interest
   user.data<-user.data[!is.na(user.data[,s_col_interest]),]
-  # if(settings$usa.only){user.data<-user.data[user.data$USA==1,]}
-  # if(settings$course.only){
-  #   post.data<-post.data[post.data$course.post==1,]
-  #   upvote.data<-upvote.data[upvote.data$course.post==1,]
-  # }
-  # if(!settings$self.posts){
-  #   post.data<-post.data[post.data$self.reply==0,]
-  # }
-  
-  # this is equivalent to saying neigher post nor upvote data uploaded yet
-
   
   df_plot <- user.data[ ,c("user_id",s_col_interest)]
   df_plot$Replies <- user.data$count_replies
@@ -36,7 +25,7 @@ makeActivityIdeologyGraph <- function(user.data,  settings){
   
   g_plot <- ggplot(df_plot, aes_string(x=settings$of.interest, y="value", group=s_col_interest)) +
     facet_wrap(~ variable, ncol = 1 ,scales = "free") +
-    theme( # remove the vertical grid lines, keep horizontal
+    theme( 
       panel.grid.major.x = element_blank() ,
       panel.grid.major.y = element_line( size=.1, color="black" )
     )
