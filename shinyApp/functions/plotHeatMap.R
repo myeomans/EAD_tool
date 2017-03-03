@@ -9,21 +9,37 @@ plotHeatMap <- function(post.data, settings){
   s_of_interest <- settings$of.interest
   s_of_interest_parent <- paste0("parent_",s_of_interest)
   
+  post.data$bot <- post.data[[s_of_interest]]
+  post.data$top <- post.data[[s_of_interest_parent]]
+  
+  if(!is.factor(post.data$bot)){
+    if(length(levels(as.factor(post.data$bot)))>7){
+      
+      
+      post.data$bot<-cut(post.data$bot, breaks=quantile(post.data$bot, probs=seq(0,1, by=0.25), na.rm=TRUE), 
+                    include.lowest=TRUE, ordered_result=T,dig.lab = 2)
+      post.data$top<-cut(post.data$top, breaks=quantile(post.data$bot, probs=seq(0,1, by=0.25), na.rm=TRUE), 
+                    include.lowest=TRUE, ordered_result=T,dig.lab = 2)
+    }else{
+      post.data$bot <- factor(post.data$bot)
+      post.data$top <- factor(post.data$top)
+    }
+  }
   
   post.data <- data.table(post.data)
   
   #-----
   #post.data <- post.data[responded_to!=username ]
   #-----
-  v_s_cols <-  c(s_of_interest_parent, s_of_interest)
+  v_s_cols <-  c("top", "bot")
   dt_freq <- post.data[ , .(freq = .N), keyby = v_s_cols]
   
-  if( is.factor(post.data[[s_of_interest_parent ]])){
-    v_levels <- unique( c( as.character(post.data[[s_of_interest_parent ]]) , 
-                           as.character(post.data[[s_of_interest ]])))
+  if( is.factor(post.data[["top" ]])){
+    v_levels <- unique( c( as.character(post.data[["top" ]]) , 
+                           as.character(post.data[["bot" ]])))
   } else {
-    v_levels <- unique( c( post.data[[s_of_interest_parent ]] , 
-                           post.data[[s_of_interest ]]))
+    v_levels <- unique( c( post.data[["top" ]] , 
+                           post.data[["bot" ]]))
   }
 
   v_levels <- v_levels[! is.na(v_levels)]
