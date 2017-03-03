@@ -55,7 +55,7 @@ server <- function(input, output) {
   getEnrol <- reactive({dfFromCsv(input, "enrol")})
   
   getSurvey <- reactive({
-    makeSurveyData(getSurveyPre() , getPostsPre(), getUpvotesPre(), input)
+    makeSurveyData(getSurveyPre() , getPosts(), getUpvotes(), input)
   })
   getPosts <- reactive({
     makePostData(getPostsPre() , getSurveyPre(), input)
