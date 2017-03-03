@@ -32,6 +32,9 @@ makeCounts <- function(df_data, s_col_to_count, s_count_name){
   } else if (is.numeric(df_data[[s_col_to_count]]) ){
     df_count[[s_col_to_count]] <- as.numeric(df_count[[s_col_to_count]])
   }
+  if(sum(is.na(df_count[[s_col_to_count]]))>0){
+    stop(paste0("NAs " ,"in", "s_count_name"))
+  }
   return(df_count)
 }
 ###############################################################################################
