@@ -3,6 +3,10 @@ makePostData <- function(df_post=NULL, df_survey=NULL,settings = NULL){
   if(is.null(df_post) | is.null(df_survey)){
     return(NULL)
   } else {
+    if(!is.null(df_survey$TriPart)){
+      df_survey$TriPart <- factor(df_survey$TriPart, levels = c("Liberal", "Moderate","Conservative"))
+    }
+    
     df_survey_parent <- df_survey
     names(df_survey_parent) <- paste0("parent_", names(df_survey))
     df_post <- merge(df_post, df_survey, by = "user_id", all.x = TRUE)

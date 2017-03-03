@@ -33,7 +33,7 @@ plotHeatMap <- function(post.data, settings){
   v_s_cols <-  c("top", "bot")
   dt_freq <- post.data[ , .(freq = .N), keyby = v_s_cols]
   
-  if( is.factor(post.data[["top" ]])){
+  if( is.factor(post.data[["bot" ]])){
     v_levels <- unique( c( as.character(post.data[["top" ]]) , 
                            as.character(post.data[["bot" ]])))
   } else {
@@ -45,10 +45,7 @@ plotHeatMap <- function(post.data, settings){
   dt_comb <- CJ(v_levels, v_levels)
   
   v_s_names <- c("user_ideology", "respond_ideology")
-  if(exists("s_f_levels")){
-    dt_comb[ , user_ideology := factor(user_ideology , levels = s_f_levels)]
-  }
-  
+
   setnames(dt_freq , v_s_cols, v_s_names)
   setnames(dt_comb  , v_s_names)
   dt_freq <- merge(dt_comb, dt_freq, by = v_s_names, all.x  = TRUE)
@@ -61,12 +58,9 @@ plotHeatMap <- function(post.data, settings){
   dt_freq[ , difference := freq - expected  ]
   
   dt_freq[ , expected := round(expected)] 
-  if( !is.factor(dt_freq[ , user_ideology])){
-    dt_freq[ , user_ideology := factor(user_ideology, v_levels)] 
-    dt_freq[ , respond_ideology := factor(respond_ideology, levels=rev(v_levels))]
-  } else {
-    dt_freq[ , respond_ideology := factor(respond_ideology, levels=s_f_levels)]
-  }
+
+  dt_freq[ , user_ideology := factor(user_ideology, levels=s_f_levels, ordered=TRUE)] 
+  dt_freq[ , respond_ideology := factor(respond_ideology, levels=s_f_levels, ordered=TRUE)]
   
   # original code incorrectly set x as response ideology but xlab as user ideology
   gg_out <- ggplot(dt_freq, aes(x =user_ideology, y = respond_ideology, fill = difference,   group=user_ideology)) +
