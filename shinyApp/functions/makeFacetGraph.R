@@ -71,7 +71,8 @@ makeFacetGraph <- function( data, s_data_origin, settings){
     ylim(0,NA) + scale_fill_brewer( palette = "Set1")+
     labs(x=s_xlab,y=s_ylab, fill = s_fill) +
     scale_x_discrete(breaks=NULL) +
-    #scale_fill_discrete(name="Commenter Ideology") +
+    #scale_fill_manual(values=c("cornflowerblue","forestgreen","firebrick",)) +
+    scale_fill_discrete(name="Commenter Ideology") +
     getTheme()
   
   return(g_plot)
