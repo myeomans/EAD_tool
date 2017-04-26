@@ -39,7 +39,7 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Introduction", tabName = "instructions" ),
       menuItem("Users", tabName = "users"),
-      #menuItem("Text Analysis", tabName = "text")
+      menuItem("Text Analysis", tabName = "text"),
       menuItem("Forum Activity", tabName = "forum")
     )
   ),
@@ -47,7 +47,7 @@ ui <- dashboardPage(
     tabItems(
       introTab(),
       userTab(),
-      #textTab(),
+      textTab(),
       forumTab()
     )
   )
@@ -75,6 +75,10 @@ server <- function(input, output) {
   })
   
   output$posts_plot <-shiny::renderPlot({
+    makeFacetGraph(getPosts(), s_data_origin = "post", input)
+  })
+  
+  output$posts_plot1 <-shiny::renderPlot({
     makeFacetGraph(getPosts(), s_data_origin = "post", input)
   })
   
@@ -111,6 +115,9 @@ server <- function(input, output) {
     makeWordGraph(getPosts(),input)
   })
   
+  output$word_plot1 <-shiny::renderPlot({
+    makeWordGraph(getPosts(),input)
+  })
 }
 
 shinyApp(ui, server)
