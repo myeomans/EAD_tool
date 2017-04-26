@@ -7,12 +7,16 @@
 ##################################################################################
 ##################################################################################
 library(shiny)
+library(dplyr)
 library(shinydashboard)
 library(ggplot2) 
 library(reshape2)
 library(htmlTable)
 library(data.table)
 library(shinyBS)
+library(qdap)
+library(quanteda)
+library(tm)
 
 options(shiny.maxRequestSize=30*1024^2) 
 ##########################################################################
@@ -35,6 +39,7 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Introduction", tabName = "instructions" ),
       menuItem("Users", tabName = "users"),
+      #menuItem("Text Analysis", tabName = "text")
       menuItem("Forum Activity", tabName = "forum")
     )
   ),
@@ -42,6 +47,7 @@ ui <- dashboardPage(
     tabItems(
       introTab(),
       userTab(),
+      #textTab(),
       forumTab()
     )
   )
@@ -95,10 +101,16 @@ server <- function(input, output) {
   
   
   output$expected_actual_plot<-shiny::renderPlot({
-    plotExpectedVsActualPosts(getSurvey(),
-                              getPosts(),
-                              input)
+    makeWordGraph(getPosts(),input)
+    # plotExpectedVsActualPosts(getSurvey(),
+    #                           getPosts(),
+    #                           input)
   })
+  
+  output$word_plot <-shiny::renderPlot({
+    makeWordGraph(getPosts(),input)
+  })
+  
 }
 
 shinyApp(ui, server)

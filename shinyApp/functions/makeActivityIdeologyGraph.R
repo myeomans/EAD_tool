@@ -29,11 +29,12 @@ makeActivityIdeologyGraph <- function(user.data,  settings){
       panel.grid.major.x = element_blank() ,
       panel.grid.major.y = element_line( size=.1, color="black" )
     )
-  if(length(unique(df_plot[,s_col_interest])) <= 5 ){
+  buckets<-unique(df_plot[,s_col_interest])
+  if(length(buckets) <= 5 ){
     g_plot <- g_plot + geom_boxplot(alpha = 0.2)
   } else{
-    if(length(unique(df_plot[,s_col_interest])) <= 12 ){
-      g_plot <- g_plot + scale_x_continuous(breaks = unique(df_plot[,s_col_interest]))
+    if(length(buckets) <= 12 ){
+      g_plot <- g_plot + scale_x_continuous(breaks = buckets)
     }
     g_plot <- g_plot + geom_jitter(position=position_jitter(.02),alpha=0.2)
   }

@@ -68,12 +68,22 @@ makeFacetGraph <- function( data, s_data_origin, settings){
   
   g_plot <- qplot(bot, data=data, geom="bar", fill=bot) +
     facet_wrap(~ top, strip.position = "bottom") + 
-    ylim(0,NA) + scale_fill_brewer( palette = "Set1")+
+    ylim(0,NA) + #scale_fill_brewer( palette = "Set1")+
     labs(x=s_xlab,y=s_ylab, fill = s_fill) +
     scale_x_discrete(breaks=NULL) +
-    #scale_fill_manual(values=c("cornflowerblue","forestgreen","firebrick")) +
-    scale_fill_discrete(name="Commenter Ideology") +
     getTheme()
+  if(length(unique(data$bot)) == 3){
+    g_plot <- g_plot + scale_fill_manual(values=c("navy","forestgreen","firebrick"), 
+                                          name="Commenter Ideology")
+  } else{ 
+    g_plot <- g_plot + scale_fill_discrete(name="Commenter Ideology")
+  }
   
   return(g_plot)
 }
+
+  # scale_x_discrete(breaks=NULL) +
+  #   scale_fill_manual(values=c("navy","forestgreen","firebrick"), 
+  #                     name="Commenter Ideology") +
+  #   
+  # g_plot <- g_plot + scale_x_manual(values=c("navy","forestgreen","firebrick"), name="")
