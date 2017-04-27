@@ -3,17 +3,8 @@ textTab <- function(){
           h2("Text Analysis"),
           fluidRow(
             box(
-              height = "300px",
+              height = "500px",
               width = 12,
-              h3("Descriptive statistics of forum participants"),
-              plotOutput("posts_plot1")
-            )
-          ),
-          fluidRow(
-            box(
-              height = "300px",
-              width = 12,
-              h3("Word Plot"),
               plotOutput("word_plot1")
             )
           )

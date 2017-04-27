@@ -17,6 +17,7 @@ library(shinyBS)
 library(qdap)
 library(quanteda)
 library(tm)
+library(Matrix)
 
 options(shiny.maxRequestSize=30*1024^2) 
 ##########################################################################
@@ -39,16 +40,16 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Introduction", tabName = "instructions" ),
       menuItem("Users", tabName = "users"),
-      menuItem("Text Analysis", tabName = "text"),
-      menuItem("Forum Activity", tabName = "forum")
+      menuItem("Forum Activity", tabName = "forum"),
+      menuItem("Text Analysis", tabName = "text")
     )
   ),
   dashboardBody(
     tabItems(
       introTab(),
       userTab(),
-      textTab(),
-      forumTab()
+      forumTab(),
+      textTab()
     )
   )
 )

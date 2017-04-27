@@ -28,12 +28,13 @@ mi <- function(i, j) {
 }
 ######################################################################
 # Compute variance-weighted log-odds and mutual information
-cmp.slor.mis <- function(textMatrix, rating) {
+cmp.slor.mis <- function(textm, rating) {
+  textm<-as.matrix(textm)
   prior <- 1
-  cons <- Matrix::colSums(textMatrix[c(rating) >= 0,])  # Conservative posts
-  libs <- Matrix::colSums(textMatrix[c(rating) < 0,])  # Liberal posts
+  cons <- Matrix::colSums(textm[rating >= 0,], na.rm=T)  # Conservative posts
+  libs <- Matrix::colSums(textm[rating < 0,], na.rm=T)  # Liberal posts
   slor <- slogodds(cons, libs, prior)$slor  # Use the variance-weighted log-odds
-  mis <- apply(textMatrix, 2, function(x) mi(x>0, rating))
+  mis <- apply(textm, 2, function(x) mi(x>0, rating))
   results <- data.frame(slor =  slor, mis = mis) %>% mutate(col = slor > 0)
   return(results)
 }

@@ -4,45 +4,28 @@
 makeWordGraph <- function(data, settings){
   if( is.null(data)){
     return(NULL)
-   }else{
-  #   word.plot.s<-qplot(x=qdap::word_count(data$body, missing=0))
-  #   return(word.plot.s)
-  # }
-  # }
-     
-    textRating<- rnorm(nrow(data))
-    
-    #s_of_interest <- settings$of.interest
-    # textRating <- data[,s_of_interest]
-    # if(length(unique(textRating))>2){
-    #   if(is.numeric(textRating)){
-    #     textRating<-mediansplit(textRating)
-    #   }
-    # } else {
-    #   textRating<-(1*(textRating==levels(textRating)[length(levels(textRating))])
-    #                -1*(textRating==levels(textRating)[1]))
-    # }
-    #
-    
+  }else{
+    s_of_interest <- settings$of.interest
+    textRating <- data[,s_of_interest]
+    if(!is.numeric(textRating)){
+      #textRating[textRating==""]<-NA
+      textRating<-(1*(textRating==levels(textRating)[length(levels(textRating))])
+                   -1*(textRating==levels(textRating)[1]))
+    }
+    textRating<-as.numeric(scale(as.numeric(textRating)))
+    #textRating<- rnorm(nrow(data))
     textMatrix<- quanteda::dfm(data$body, stem=TRUE, remove=stopwords(),
                                removePunct=TRUE,removeSymbols=TRUE, removeNumbers=TRUE)
-    textMatrix<-textMatrix[,colMeans(textMatrix)>0.01]
-    #textMatrix<-group.max.conc(textMatrix, data$thread_id)
-
-    
-    # textMatrix<- quanteda::dfm(data$body, stem=TRUE, remove=stopwords(),
-    #                            removePunct=TRUE,removeSymbols=TRUE, removeNumbers=TRUE)
-    # textMatrix<-group.max.conc(textMatrix, data$thread_id)
-
+    textMatrix<-textMatrix[,colMeans(textMatrix, na.rm=T)>0.01]
+    textMatrix<-group.max.conc(textMatrix, data$thread_id)
     text.results <- cmp.slor.mis(textMatrix, textRating)
     # Display mutual information plot
-    grayline<- .25
-    
-    word.plot<-ggplot(data=text.results) +
-      #geom_point(aes(x=slor, y=mis, color=slor), size=0) +
-      geom_text(aes(x=slor, y=mis, label=colnames(textMatrix)),
-                alpha=ifelse(text.results$mis > grayline, 1, text.results$mis * (150)*(0.005/grayline)),
-                color=ifelse(text.results$col, "firebrick", "dodgerblue"),
+    grayline<- quantile(text.results$mis,.5)
+    word.plot<-ggplot() +
+      #geom_point(aes(x=slor, y=mis, color=slor), size1) +
+      geom_text(aes(x=text.results$slor, y=text.results$mis, label=colnames(textMatrix)),
+                alpha=ifelse(text.results$mis > grayline, 1, text.results$mis *(0.75/grayline)),
+                color=ifelse(text.results$col, "firebrick", "navy"),
                 size=4,
                 nudge_y=0.00) +
       guides(fill=FALSE) +
@@ -57,7 +40,5 @@ makeWordGraph <- function(data, settings){
       theme(plot.title = element_text(hjust = 0.5, size=20, family="Times",face="bold"),
             axis.title = element_text(family="Times",face="bold", size=20), legend.position="none")
     return(word.plot)
-    # word.plot.s<-qplot(x=qdap::word_count(data$body, missing=0))
-    # return(word.plot.s)
   }
 }
