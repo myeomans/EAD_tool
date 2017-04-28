@@ -36,7 +36,8 @@ makeActivityIdeologyGraph <- function(user.data,  settings){
     if(length(buckets) <= 12 ){
       g_plot <- g_plot + scale_x_continuous(breaks = buckets)
     }
-    g_plot <- g_plot + geom_jitter(position=position_jitter(.02),alpha=0.2)
+    g_plot <- g_plot + geom_jitter(position=position_jitter(width=.2,height=1),alpha=0.2)
+    
   }
   g_plot <- g_plot + xlab(settings$of.interest) +
     ylab( "Number of Actions per Person") +

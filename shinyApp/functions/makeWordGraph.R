@@ -8,7 +8,7 @@ makeWordGraph <- function(data, settings){
     s_of_interest <- settings$of.interest
     textRating <- data[,s_of_interest]
     if(!is.numeric(textRating)){
-      #textRating[textRating==""]<-NA
+      textRating[textRating==""]<-NA
       textRating<-(1*(textRating==levels(textRating)[length(levels(textRating))])
                    -1*(textRating==levels(textRating)[1]))
     }

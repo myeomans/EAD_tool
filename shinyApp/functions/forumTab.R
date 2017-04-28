@@ -25,7 +25,7 @@ forumTab <- function(){
                                 size = "small",
                                 p("Text posts plot")
                         )),
-              tabPanel("Heat map", plotOutput("heat_plot", height = 280),
+              tabPanel("Heat map", plotOutput("heat_post_plot", height = 280),
                        actionButton("heatHelp", "",icon = icon("question")),
                        bsModal(id = "heatHelpModal", 
                                "Help", 
@@ -45,7 +45,7 @@ forumTab <- function(){
                                 size = "small",
                                 p("Text upvotes plot")
                         )),
-              tabPanel("Exp vs Actual", plotOutput("expected_actual_plot", height = 280),
+              tabPanel("Heat Map", plotOutput("heat_upvote_plot", height = 280),
                        actionButton("expActHelp", "",icon = icon("question")),
                        bsModal(id = "expActHelpModal", 
                                "Help", 

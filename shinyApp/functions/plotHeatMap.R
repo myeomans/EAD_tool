@@ -2,7 +2,7 @@
 # Author: 
 #    concept: Brandon
 #    code: Alejandro Kantor
-plotHeatMap <- function(post.data, settings){
+plotHeatMap <- function(post.data, s_data_origin, settings){
   if( is.null(post.data)){
     return(NULL)
   }

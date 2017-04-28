@@ -99,17 +99,22 @@ server <- function(input, output) {
               input)
   })
   
-  output$heat_plot <-shiny::renderPlot({
+  output$heat_post_plot <-shiny::renderPlot({
     plotHeatMap(getPosts(),
+                s_data_origin = "post",
                 input)
   })
   
-  
   output$expected_actual_plot<-shiny::renderPlot({
-    makeWordGraph(getPosts(),input)
-    # plotExpectedVsActualPosts(getSurvey(),
-    #                           getPosts(),
-    #                           input)
+    plotExpectedVsActualPosts(getSurvey(),
+                              getPosts(),
+                              input)
+  })
+  
+  output$heat_upvote_plot<-shiny::renderPlot({
+    plotHeatMap(getUpvotes(),
+                s_data_origin = "upvote",
+                input)    
   })
   
   output$word_plot <-shiny::renderPlot({
